@@ -2,7 +2,7 @@
 
 The site is already live at https://fluffy731.github.io/pinkaholic/. These steps put it on https://pinkaholic.com.au, with www redirecting to it.
 
-> **Before you start:** GitHub's terms say Pages isn't allowed to be used "to run your online business, e-commerce site" ([GitHub Pages limits](https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits)). A shop site is a risk there. The safer option is to keep the code on GitHub and let Cloudflare Pages host it from the same repo, which changes the DNS steps below. Decide on hosting before you change any DNS.
+> **Hosting decision (20 Oct 2026):** staying on GitHub Pages. GitHub's terms say Pages isn't for running "an online business, e-commerce site" ([GitHub Pages limits](https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits)). The owner accepts that risk. If GitHub ever objects, the same repo can be hosted on Cloudflare Pages or Netlify with only DNS changes.
 
 Do the steps in this order. Verifying the domain first stops anyone else from claiming it on GitHub.
 
@@ -49,6 +49,8 @@ nslookup pinkaholic.com.au
 You should see the four `185.199.x.153` addresses. Then go back to GitHub Settings → Pages and click **Verify** on the domain.
 
 ## 4. Point the site at the domain
+
+Leave this until step 3 shows the GitHub addresses. Setting it earlier makes the github.io link redirect to GoDaddy's parked page.
 
 1. Open https://github.com/fluffy731/pinkaholic/settings/pages
 2. Under **Custom domain**, type `pinkaholic.com.au` and click **Save**. GitHub runs a DNS check, which should go green.
