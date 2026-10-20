@@ -53,7 +53,7 @@
       "<h3>" + p.name + "</h3><p>" + p.note + "</p>" +
       '<div class="pack__price">' + money(p.price) + "</div>" +
       '<div class="pack__each">' + (p.qty > 1 ? each + " per ball" : "One ball") + "</div>" +
-      '<a class="btn btn--small" href="#design" data-pack="' + p.id + '">Choose ' + p.name.toLowerCase() + "</a>";
+      '<a class="btn btn--small" href="#design" data-pack="' + p.id + '" aria-label="Choose ' + p.name.toLowerCase() + '">Choose</a>';
     cards.appendChild(card);
   });
 
@@ -117,10 +117,10 @@
     });
 
     var p = pack();
-    var free = p.price >= cfg.delivery.freeShippingFrom;
+    var free = !cfg.delivery.shippingFee || p.price >= cfg.delivery.freeShippingFrom;
     $("#total").textContent = money(p.price);
     $("#ship-note").textContent = free
-      ? "Free tracked shipping to AU & NZ"
+      ? "Includes GST and free tracked shipping to AU & NZ"
       : "+ " + money(cfg.delivery.shippingFee) + " tracked shipping. Free over " + money(cfg.delivery.freeShippingFrom);
     $("#eta").innerHTML = "Order today, arrives around <b>" + addDays(cfg.delivery.minDays) + " – " + addDays(cfg.delivery.maxDays) + "</b>";
 

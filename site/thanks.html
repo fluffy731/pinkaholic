@@ -16,7 +16,23 @@
     <img src="assets/logo.svg" alt="Pinkaholic" width="220" height="70" style="margin:0 auto 28px">
     <h1>Thank you, <em>pink friend.</em></h1>
     <p class="lede" style="margin-inline:auto">Your order is in. You'll get a receipt by email now, and a tracking link once your balls are printed and on their way. Most orders arrive in about 14 days.</p>
+    <p id="your-text" hidden></p>
     <a class="btn" href="./">Back to Pinkaholic</a>
   </main>
+  <script>
+    // Show the design saved by the designer so the customer can check what will be printed.
+    (function () {
+      try {
+        var d = JSON.parse(localStorage.getItem("pinkaholic-design") || "null");
+        if (!d || !d.line1) return;
+        var p = document.getElementById("your-text");
+        p.textContent = "Your ball will say: “" + d.line1 + (d.line2 ? " / " + d.line2 : "") + "” in " + d.font + " style, " + d.ink + " ink. Spotted a typo? Reply to your receipt email within 24 hours and we'll fix it before printing.";
+        p.className = "order__soon";
+        p.style.margin = "0 auto 28px";
+        p.style.maxWidth = "34em";
+        p.hidden = false;
+      } catch (e) {}
+    })();
+  </script>
 </body>
 </html>
