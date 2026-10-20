@@ -4,127 +4,126 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Pinkaholic | Personalised pink tennis balls</title>
-  <meta name="description" content="Pink tennis balls printed with your own words. Made to order and delivered across Australia and New Zealand.">
+  <meta name="description" content="Pink felt tennis balls printed with your name, your words or your logo. Made to order and delivered across Australia and New Zealand.">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-  <meta property="og:title" content="Pinkaholic | Your words on a pink tennis ball">
-  <meta property="og:description" content="Personalised pink tennis balls, delivered across Australia and New Zealand.">
+  <meta property="og:title" content="Pinkaholic | Personalised pink tennis balls">
+  <meta property="og:description" content="Your name, your words or your logo, printed on a pink tennis ball. Delivered across Australia and New Zealand.">
   <meta property="og:url" content="https://pinkaholic.com.au/">
-  <meta name="theme-color" content="#FFF8F3">
+  <meta name="theme-color" content="#FBF6F3">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;1,9..144,500&family=Pacifico&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Great+Vibes&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <a class="skip" href="#design">Skip to the designer</a>
 
-  <div class="marquee" aria-label="Shop news">
-    <div class="marquee__track">
-      <span>Printed with your words</span><span>♥</span>
-      <span>Delivered across Australia &amp; New Zealand</span><span>♥</span>
-      <span>Free tracked shipping</span><span>♥</span>
-      <span>Made to order, arrives in about 14 days</span><span>♥</span>
-      <span aria-hidden="true">Printed with your words</span><span aria-hidden="true">♥</span>
-      <span aria-hidden="true">Delivered across Australia &amp; New Zealand</span><span aria-hidden="true">♥</span>
-      <span aria-hidden="true">Free tracked shipping</span><span aria-hidden="true">♥</span>
-      <span aria-hidden="true">Made to order, arrives in about 14 days</span><span aria-hidden="true">♥</span>
-    </div>
-  </div>
+  <p class="notice">Complimentary tracked shipping to Australia &amp; New Zealand <span aria-hidden="true">·</span> Printed to order</p>
 
   <header class="top">
     <a class="top__logo" href="#top" aria-label="Pinkaholic home"><img src="assets/logo.svg" alt="Pinkaholic" width="190" height="60"></a>
     <nav class="top__nav" aria-label="Main">
-      <a href="#how">How it works</a>
-      <a href="#ideas">Gift ideas</a>
-      <a href="#packs">Packs</a>
-      <a href="#faq">FAQ</a>
+      <a href="#design">Design</a>
+      <a href="#occasions">Occasions</a>
+      <a href="#packs">Sets</a>
+      <a href="#faq">Questions</a>
     </nav>
-    <a class="btn btn--small" href="#design">Design yours</a>
+    <a class="btn btn--small" href="#design">Personalise</a>
   </header>
 
   <main id="top">
     <section class="hero">
       <div class="hero__copy">
-        <p class="eyebrow">Personalised pink tennis balls</p>
-        <h1>Your words, <em>on a pink ball.</em></h1>
-        <p class="lede">Type a name, a nickname or a little in-joke. We print it on a bright pink tennis ball and send it to anywhere in Australia or New Zealand.</p>
+        <p class="eyebrow">Personalised tennis balls</p>
+        <h1>Made yours, <em>in pink.</em></h1>
+        <p class="lede">Your name, your words or your logo, printed on a soft pink felt ball. A gift for the court, the wedding table and everyone in between.</p>
         <div class="hero__cta">
           <a class="btn" href="#design">Design your ball</a>
-          <a class="btn btn--ghost" href="#packs">See packs</a>
+          <a class="link" href="#packs">View the sets</a>
         </div>
-        <ul class="ticks">
-          <li>Up to 2 lines of your text</li>
-          <li>3 print styles, 2 ink colours</li>
-          <li>Single balls to club dozens</li>
-        </ul>
       </div>
-      <div class="hero__art">
-        <div class="pebble pebble--hero">
-          <svg class="ball ball--hero" viewBox="0 0 320 320" aria-hidden="true">
-            <use href="#ball-body"/>
-            <text class="ball__text ball__text--script" x="160" y="168" text-anchor="middle" data-cycle>Ace Mum</text>
-          </svg>
-        </div>
-        <span class="sticker sticker--a">Made to order</span>
-        <span class="sticker sticker--b">100% pink</span>
-      </div>
+      <figure class="hero__art">
+        <canvas class="ball-canvas" id="hero-ball" width="640" height="640" aria-label="A pink tennis ball printed with a name"></canvas>
+      </figure>
     </section>
 
-    <div class="gingham" role="presentation"></div>
-
-    <section class="designer band band--shell" id="design" aria-labelledby="design-title">
-      <h2 id="design-title">Design <em>your</em> ball</h2>
-      <p class="section-lede">What you see is what we print. Check your spelling, because every ball is made just for you.</p>
+    <section class="designer" id="design" aria-labelledby="design-title">
+      <header class="section-head">
+        <p class="eyebrow">The atelier</p>
+        <h2 id="design-title">Design <em>your ball</em></h2>
+        <p class="section-lede">Add your words, a logo, or both. The preview shows how the print sits on the felt.</p>
+      </header>
 
       <div class="designer__grid">
         <div class="designer__preview">
-          <div class="pebble">
-            <svg class="ball" id="preview" viewBox="0 0 320 320" role="img" aria-labelledby="preview-desc">
-              <desc id="preview-desc">Preview of your pink tennis ball</desc>
-              <use href="#ball-body"/>
-              <text class="ball__text" id="pv1" x="160" y="160" text-anchor="middle"></text>
-              <text class="ball__text" id="pv2" x="160" y="200" text-anchor="middle"></text>
-            </svg>
-          </div>
-          <p class="preview-note">Preview only. Print colour can vary a little on felt.</p>
+          <canvas class="ball-canvas" id="preview" width="720" height="720" role="img" aria-label="Preview of your personalised pink tennis ball"></canvas>
+          <p class="preview-note">Preview. Print on felt is slightly softer than on screen.</p>
         </div>
 
         <form class="designer__form" id="designer" novalidate>
           <fieldset>
-            <legend>1. Your text</legend>
-            <label for="line1">Line 1</label>
+            <legend><span>01</span> Your words</legend>
             <div class="field">
-              <input id="line1" name="line1" type="text" autocomplete="off" maxlength="14" value="Game, set, Mum" aria-describedby="line1-count">
+              <label for="line1">First line</label>
+              <input id="line1" name="line1" type="text" autocomplete="off" maxlength="14" value="Chloe &amp; Jack" aria-describedby="line1-count">
               <span class="count" id="line1-count" aria-live="polite"></span>
             </div>
-            <label for="line2">Line 2 <span class="opt">(optional)</span></label>
             <div class="field">
+              <label for="line2">Second line <span class="opt">optional</span></label>
               <input id="line2" name="line2" type="text" autocomplete="off" maxlength="14" value="" aria-describedby="line2-count">
               <span class="count" id="line2-count" aria-live="polite"></span>
             </div>
-            <p class="hint">Letters, numbers and simple punctuation. No logos or brand names, please.</p>
           </fieldset>
 
           <fieldset>
-            <legend>2. Print style</legend>
-            <div class="chips" role="radiogroup">
-              <label class="chip"><input type="radio" name="font" value="script" checked><span class="chip__face f-script">Script</span></label>
-              <label class="chip"><input type="radio" name="font" value="bold"><span class="chip__face f-bold">Bold</span></label>
-              <label class="chip"><input type="radio" name="font" value="classic"><span class="chip__face f-classic">Classic</span></label>
+            <legend><span>02</span> Lettering</legend>
+            <div class="options options--fonts" role="radiogroup" aria-label="Lettering">
+              <label class="opt-card"><input type="radio" name="font" value="script" checked><span class="f-script">Script</span></label>
+              <label class="opt-card"><input type="radio" name="font" value="serif"><span class="f-serif">Serif</span></label>
+              <label class="opt-card"><input type="radio" name="font" value="caps"><span class="f-caps">Capitals</span></label>
+              <label class="opt-card"><input type="radio" name="font" value="modern"><span class="f-modern">Modern</span></label>
             </div>
           </fieldset>
 
           <fieldset>
-            <legend>3. Ink colour</legend>
-            <div class="chips" role="radiogroup">
-              <label class="chip"><input type="radio" name="ink" value="white" checked><span class="chip__face"><i class="dot dot--white"></i>White</span></label>
-              <label class="chip"><input type="radio" name="ink" value="berry"><span class="chip__face"><i class="dot dot--berry"></i>Berry</span></label>
+            <legend><span>03</span> Ink</legend>
+            <div class="options options--inks" role="radiogroup" aria-label="Ink">
+              <label class="swatch"><input type="radio" name="ink" value="wine" checked><i style="--c:#5C1834"></i><span>Wine</span></label>
+              <label class="swatch"><input type="radio" name="ink" value="black"><i style="--c:#1E161B"></i><span>Black</span></label>
+              <label class="swatch"><input type="radio" name="ink" value="white"><i style="--c:#FFFFFF"></i><span>White</span></label>
+              <label class="swatch"><input type="radio" name="ink" value="gold"><i style="--c:linear-gradient(135deg,#9C7442,#E8CB92 50%,#A87C46)"></i><span>Gold foil</span></label>
             </div>
           </fieldset>
 
           <fieldset>
-            <legend>4. Pack size</legend>
-            <div class="packs-pick" id="pack-pick"></div>
+            <legend><span>04</span> Logo <span class="opt">optional</span></legend>
+            <div class="upload" id="upload">
+              <input type="file" id="logo-file" accept="image/png,image/jpeg,image/svg+xml,image/webp">
+              <label for="logo-file" class="upload__drop">
+                <strong id="logo-name">Add a logo or crest</strong>
+                <span>PNG with a transparent background works best. JPG, SVG or WebP up to 5 MB.</span>
+              </label>
+              <button type="button" class="link" id="logo-remove" hidden>Remove</button>
+            </div>
+            <div class="logo-opts" id="logo-opts" hidden>
+              <div class="seg" role="radiogroup" aria-label="Logo position">
+                <label><input type="radio" name="layout" value="above" checked><span>Above words</span></label>
+                <label><input type="radio" name="layout" value="below"><span>Below words</span></label>
+                <label><input type="radio" name="layout" value="only"><span>Logo only</span></label>
+              </div>
+              <label for="logo-size" class="range-label">Logo size</label>
+              <input type="range" id="logo-size" min="0.5" max="1.4" step="0.05" value="1">
+              <div class="checks">
+                <label><input type="checkbox" id="logo-ink" checked> Print the logo in the ink colour</label>
+                <label><input type="checkbox" id="logo-white"> Remove a white background</label>
+              </div>
+              <p class="hint">We'll email you to confirm your logo artwork before anything is printed.</p>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend><span>05</span> Set</legend>
+            <div class="sets" id="pack-pick"></div>
           </fieldset>
 
           <div class="order">
@@ -133,7 +132,7 @@
             <button class="btn btn--wide" type="submit" id="order-btn">Order now</button>
             <p class="order__eta" id="eta"></p>
             <p class="order__soon" id="soon" hidden>
-              Our checkout opens soon. Want one now? <a id="email-order" href="#">Email us your design</a> and we'll reply with a payment link.
+              Online checkout opens soon. To order now, <a id="email-order" href="#">email us your design</a><span id="soon-logo" hidden> and attach your logo file</span>, and we'll reply with a payment link.
             </p>
           </div>
         </form>
@@ -141,95 +140,89 @@
     </section>
 
     <section class="how" id="how" aria-labelledby="how-title">
-      <h2 id="how-title">How it <em>works</em></h2>
+      <header class="section-head">
+        <p class="eyebrow">How it works</p>
+        <h2 id="how-title">From your words <em>to your door</em></h2>
+      </header>
       <ol class="steps">
-        <li>
-          <span class="steps__num">1</span>
-          <h3>Type it</h3>
-          <p>Add up to two short lines, pick a print style and ink colour, and watch the preview update.</p>
-        </li>
-        <li>
-          <span class="steps__num">2</span>
-          <h3>We print it</h3>
-          <p>Your balls are printed to order. Nothing sits on a shelf waiting for you.</p>
-        </li>
-        <li>
-          <span class="steps__num">3</span>
-          <h3>It lands</h3>
-          <p>Tracked delivery to your door in about 14 days, anywhere in Australia or New Zealand.</p>
-        </li>
+        <li><span class="steps__num">01</span><h3>Personalise</h3><p>Choose your words, lettering and ink, and add a logo if you like.</p></li>
+        <li><span class="steps__num">02</span><h3>Printed to order</h3><p>Each ball is printed for you. Logo orders get an artwork check by email first.</p></li>
+        <li><span class="steps__num">03</span><h3>Delivered</h3><p>Tracked delivery anywhere in Australia or New Zealand, usually in about 14 days.</p></li>
       </ol>
     </section>
 
-    <div class="gingham" role="presentation"></div>
-
-    <section class="ideas band band--lilac" id="ideas" aria-labelledby="ideas-title">
-      <h2 id="ideas-title">Which pink <em>moment?</em></h2>
-      <div class="tabs" role="tablist" aria-label="Gift ideas">
-        <button role="tab" id="tab-players" aria-controls="panel-players" aria-selected="true">Players</button>
-        <button role="tab" id="tab-party" aria-controls="panel-party" aria-selected="false" tabindex="-1">Celebrations</button>
-        <button role="tab" id="tab-clubs" aria-controls="panel-clubs" aria-selected="false" tabindex="-1">Clubs &amp; teams</button>
-        <button role="tab" id="tab-keep" aria-controls="panel-keep" aria-selected="false" tabindex="-1">Keepsakes</button>
-      </div>
-      <div class="tabpanel" role="tabpanel" id="panel-players" aria-labelledby="tab-players">
-        <div class="idea">
-          <p>For the mate who never misses Tuesday night doubles, or the pickleball convert who won't stop talking about it.</p>
-          <ul class="samples"><li>Coach Kim</li><li>Ace of Hearts</li><li>Net Queen</li></ul>
-          <button class="btn btn--small" type="button" data-try="Net Queen">Try “Net Queen”</button>
-        </div>
-      </div>
-      <div class="tabpanel" role="tabpanel" id="panel-party" aria-labelledby="tab-party" hidden>
-        <div class="idea">
-          <p>Hens' weekends, bridal showers, 30ths and pink-themed birthdays. A party favour people actually keep.</p>
-          <ul class="samples"><li>Bride Squad</li><li>Hen's '26</li><li>Lucy turns 30</li></ul>
-          <button class="btn btn--small" type="button" data-try="Bride Squad">Try “Bride Squad”</button>
-        </div>
-      </div>
-      <div class="tabpanel" role="tabpanel" id="panel-clubs" aria-labelledby="tab-clubs" hidden>
-        <div class="idea">
-          <p>Pink ribbon rounds, end-of-season prizes, junior awards and fundraiser days. The club dozen keeps the cost per ball down.</p>
-          <ul class="samples"><li>Pink Ribbon Day</li><li>Club Champ '26</li><li>Thanks Coach</li></ul>
-          <button class="btn btn--small" type="button" data-try="Club Champ '26">Try “Club Champ '26”</button>
-        </div>
-      </div>
-      <div class="tabpanel" role="tabpanel" id="panel-keep" aria-labelledby="tab-keep" hidden>
-        <div class="idea">
-          <p>A desk ball for the office, a match-day memento or a quiet "I love you" in the kit bag.</p>
-          <ul class="samples"><li>Love all</li><li>You + Me</li><li>First match</li></ul>
-          <button class="btn btn--small" type="button" data-try="Love all">Try “Love all”</button>
-        </div>
+    <section class="occasions" id="occasions" aria-labelledby="occ-title">
+      <header class="section-head">
+        <p class="eyebrow">Occasions</p>
+        <h2 id="occ-title">For every <em>occasion</em></h2>
+      </header>
+      <div class="occ-grid">
+        <article class="occ" data-sample='{"line1":"Chloe & Jack","line2":"12.03.27","font":"script","ink":"wine"}'>
+          <canvas class="ball-canvas occ__ball" width="360" height="360" aria-hidden="true"></canvas>
+          <h3>Weddings</h3>
+          <p>Favours with both your names and the date. A keepsake guests actually take home.</p>
+          <button class="link" type="button">Use this design</button>
+        </article>
+        <article class="occ" data-sample='{"line1":"Bride Squad","line2":"","font":"serif","ink":"white"}'>
+          <canvas class="ball-canvas occ__ball" width="360" height="360" aria-hidden="true"></canvas>
+          <h3>Hens &amp; birthdays</h3>
+          <p>One for every guest, in the colour of the party.</p>
+          <button class="link" type="button">Use this design</button>
+        </article>
+        <article class="occ" data-sample='{"line1":"Champion","line2":"2026","font":"caps","ink":"gold"}'>
+          <canvas class="ball-canvas occ__ball" width="360" height="360" aria-hidden="true"></canvas>
+          <h3>Clubs &amp; teams</h3>
+          <p>Season trophies, pink ribbon rounds and thank-yous for the coach.</p>
+          <button class="link" type="button">Use this design</button>
+        </article>
+        <article class="occ" data-sample='{"line1":"Love all","line2":"","font":"modern","ink":"black"}'>
+          <canvas class="ball-canvas occ__ball" width="360" height="360" aria-hidden="true"></canvas>
+          <h3>Keepsakes</h3>
+          <p>A quiet message in the kit bag, or a ball for the desk.</p>
+          <button class="link" type="button">Use this design</button>
+        </article>
       </div>
     </section>
 
     <section class="packs" id="packs" aria-labelledby="packs-title">
-      <h2 id="packs-title">Pick your <em>pack</em></h2>
-      <p class="section-lede">Every ball in a pack carries the same text. Prices include GST and tracked shipping to Australia and New Zealand.</p>
+      <header class="section-head">
+        <p class="eyebrow">The sets</p>
+        <h2 id="packs-title">Choose <em>your set</em></h2>
+        <p class="section-lede">Every ball in a set carries the same design. Prices include GST and tracked shipping.</p>
+      </header>
       <div class="pack-cards" id="pack-cards"></div>
     </section>
 
-    <section class="trust band band--butter" aria-label="Why shop with us">
+    <section class="trust" aria-label="Our promise">
       <ul class="trust__list">
-        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></svg><span><b>Tracked delivery</b> to AU &amp; NZ</span></li>
-        <li><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><span><b>Secure checkout</b> with card, Apple Pay &amp; Google Pay</span></li>
-        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10z"/></svg><span><b>Made to order</b>, just for you</span></li>
-        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg><span><b>Faulty print?</b> We'll replace it</span></li>
+        <li><b>Tracked delivery</b><span>Australia &amp; New Zealand</span></li>
+        <li><b>Secure checkout</b><span>Card, Apple Pay &amp; Google Pay</span></li>
+        <li><b>Printed to order</b><span>Made only for you</span></li>
+        <li><b>Print guarantee</b><span>Faulty print replaced</span></li>
       </ul>
     </section>
 
     <section class="faq" id="faq" aria-labelledby="faq-title">
-      <h2 id="faq-title">Good <em>questions</em></h2>
+      <header class="section-head">
+        <p class="eyebrow">Questions</p>
+        <h2 id="faq-title">Good <em>to know</em></h2>
+      </header>
       <div class="faq__list">
         <details>
           <summary>How long does delivery take?</summary>
-          <p>Each order is printed for you and then shipped with tracking. Most orders arrive in about 14 days, and we show an estimated date before you pay. We'll email you a tracking link as soon as your balls are on their way.</p>
+          <p>Each order is printed for you and then shipped with tracking. Most orders arrive in about 14 days, and we show an estimated date before you pay. We'll email you a tracking link as soon as your order is on its way.</p>
         </details>
         <details>
           <summary>What can I print?</summary>
-          <p>Up to two lines of 14 characters each, in one of three print styles and white or berry ink. Please don't use logos, brand names, other people's trademarks, or anything offensive. We'll contact you if we can't print something.</p>
+          <p>Up to two lines of 14 characters, a logo, or both, in wine, black, white or gold foil. Please only upload logos you have the right to use, and no offensive text. We'll contact you if we can't print something.</p>
+        </details>
+        <details>
+          <summary>What logo file should I send?</summary>
+          <p>A PNG with a transparent background prints most cleanly. SVG, JPG and WebP also work. Simple, bold logos read best on felt; fine detail and very thin lines may soften. We check every logo and email you before printing.</p>
         </details>
         <details>
           <summary>Are they real tennis balls?</summary>
-          <p>Yes. They're standard-size felt tennis balls, great for a social hit, a backyard rally or a gift. They're designed for fun and gifting rather than official tournament play.</p>
+          <p>Yes. They're standard-size pink felt tennis balls, lovely for a social hit, a backyard rally or a gift. They're designed for play and gifting rather than official tournaments.</p>
         </details>
         <details>
           <summary>Can my dog play with one?</summary>
@@ -237,11 +230,11 @@
         </details>
         <details>
           <summary>Can I return a personalised ball?</summary>
-          <p>Because every ball is printed with your words, we can't take returns if you change your mind. If your order arrives damaged, misprinted or faulty, contact us within 30 days and we'll replace it or refund you. This doesn't affect your rights under Australian Consumer Law. See our <a href="policies.html#returns">returns policy</a>.</p>
+          <p>Because every ball is printed for you, we can't take change-of-mind returns. If your order arrives damaged, misprinted or faulty, contact us within 30 days and we'll replace it or refund you. This doesn't affect your rights under Australian Consumer Law. See our <a href="policies.html#returns">returns policy</a>.</p>
         </details>
         <details>
-          <summary>Do you do bigger orders for clubs or events?</summary>
-          <p>Yes. The club dozen suits most teams. For 24 balls or more, <a data-mail href="#">email us</a>. Bulk orders start from A$8.95 a ball, with no setup fee, and can have a different name on every ball.</p>
+          <summary>Do you do larger orders for weddings, clubs or events?</summary>
+          <p>Yes. For 24 balls or more, <a data-mail href="#">email us</a>. Larger orders start from A$8.95 a ball, with no setup fee, and can have a different name on every ball.</p>
         </details>
       </div>
     </section>
@@ -260,34 +253,8 @@
     <p class="foot__small">© <span data-year>2026</span> Pinkaholic. Prices in AUD and include GST.</p>
   </footer>
 
-  <!-- Shared ball artwork -->
-  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-    <defs>
-      <radialGradient id="felt" cx="38%" cy="32%" r="75%">
-        <stop offset="0" stop-color="#FFB3CF"/>
-        <stop offset=".55" stop-color="#FF7EAD"/>
-        <stop offset="1" stop-color="#E5528A"/>
-      </radialGradient>
-      <filter id="fuzz" x="-5%" y="-5%" width="110%" height="110%">
-        <feTurbulence type="fractalNoise" baseFrequency="1.4" numOctaves="2" seed="4" result="n"/>
-        <feColorMatrix in="n" type="saturate" values="0" result="g"/>
-        <feComponentTransfer in="g" result="a"><feFuncA type="linear" slope=".18"/></feComponentTransfer>
-        <feComposite in="a" in2="SourceGraphic" operator="in" result="t"/>
-        <feBlend in="SourceGraphic" in2="t" mode="multiply"/>
-      </filter>
-      <clipPath id="ball-clip"><circle cx="160" cy="160" r="150"/></clipPath>
-      <g id="ball-body">
-        <circle cx="160" cy="160" r="150" fill="url(#felt)" filter="url(#fuzz)"/>
-        <g clip-path="url(#ball-clip)" fill="none" stroke="#FFF4F8" stroke-width="9" stroke-linecap="round" opacity=".92">
-          <path d="M38 30C88 88 88 232 38 290"/>
-          <path d="M282 30C232 88 232 232 282 290"/>
-        </g>
-        <circle cx="160" cy="160" r="150" fill="none" stroke="#C93F75" stroke-opacity=".25" stroke-width="2"/>
-      </g>
-    </defs>
-  </svg>
-
   <script src="config.js"></script>
+  <script src="ball.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

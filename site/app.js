@@ -2,11 +2,14 @@
   "use strict";
 
   var cfg = window.PINKAHOLIC;
+  var Ball = window.PinkBall;
   var $ = function (sel, root) { return (root || document).querySelector(sel); };
   var $$ = function (sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); };
   var STORE_KEY = "pinkaholic-design";
   var ALLOWED = /^[\p{L}\p{N} .,!?'’&+\-#@:()\/♥]*$/u;
-  var INK = { white: "#FFFFFF", berry: "#4A1230" };
+  var MAX_LOGO_BYTES = 5 * 1024 * 1024;
+  var INK_NAMES = { wine: "wine", black: "black", white: "white", gold: "gold foil" };
+  var FONT_NAMES = { script: "script", serif: "serif", caps: "capitals", modern: "modern" };
 
   function money(n) {
     return new Intl.NumberFormat("en-AU", { style: "currency", currency: cfg.currency, minimumFractionDigits: n % 1 ? 2 : 0 }).format(n);
@@ -25,50 +28,57 @@
     } catch (e) { return null; }
   }
 
+  // Size a canvas's drawing buffer to its displayed size (capped, for speed on phones).
+  function fitCanvas(c, cap) {
+    var w = c.getBoundingClientRect().width || c.width;
+    var px = Math.round(Math.min(cap, Math.max(240, w * Math.min(window.devicePixelRatio || 1, 2))));
+    if (c.width !== px) { c.width = px; c.height = px; }
+  }
+
   // ---------- Static bits from config ----------
-  $$("[data-free-from]").forEach(function (el) { el.textContent = money(cfg.delivery.freeShippingFrom); });
   $$("[data-year]").forEach(function (el) { el.textContent = new Date().getFullYear(); });
   $$("[data-mail]").forEach(function (el) { el.href = "mailto:" + cfg.contactEmail; });
   $$("[data-insta]").forEach(function (el) { el.href = cfg.instagram; el.rel = "noopener"; });
 
-  // ---------- Packs ----------
+  // ---------- Sets ----------
   var pick = $("#pack-pick");
   var cards = $("#pack-cards");
   cfg.packs.forEach(function (p) {
     var each = money(Math.round((p.price / p.qty) * 100) / 100);
 
     var lab = document.createElement("label");
-    lab.className = "chip";
     lab.innerHTML = '<input type="radio" name="pack" value="' + p.id + '"' + (p.featured ? " checked" : "") + '>' +
-      '<span class="chip__face"><b>' + p.name + '</b><small>' + money(p.price) + (p.qty > 1 ? " · " + each + " each" : "") + '</small></span>';
+      "<span><b>" + p.name + "</b><small>" + p.qty + (p.qty > 1 ? " balls · " : " ball · ") + money(p.price) + "</small></span>";
     pick.appendChild(lab);
 
-    var balls = "";
-    for (var i = 0; i < Math.min(p.qty, 4); i++) balls += "<i></i>";
-    if (p.qty > 4) balls += "<em>×" + p.qty + "</em>";
     var card = document.createElement("article");
     card.className = "pack" + (p.featured ? " pack--featured" : "");
-    card.innerHTML = (p.featured ? '<span class="pack__badge">Most loved</span>' : "") +
-      '<div class="pack__balls" aria-hidden="true">' + balls + "</div>" +
-      "<h3>" + p.name + "</h3><p>" + p.note + "</p>" +
+    card.innerHTML = '<span class="pack__badge">' + (p.featured ? "Most loved" : "") + "</span>" +
+      "<h3>" + p.name + "</h3>" +
+      '<span class="pack__qty">' + p.qty + (p.qty > 1 ? " balls" : " ball") + "</span>" +
+      "<p>" + p.note + "</p>" +
       '<div class="pack__price">' + money(p.price) + "</div>" +
-      '<div class="pack__each">' + (p.qty > 1 ? each + " per ball" : "One ball") + "</div>" +
-      '<a class="btn btn--small" href="#design" data-pack="' + p.id + '" aria-label="Choose ' + p.name.toLowerCase() + '">Choose</a>';
+      '<div class="pack__each">' + (p.qty > 1 ? each + " per ball" : "Shipping included") + "</div>" +
+      '<a class="btn btn--small" href="#design" data-pack="' + p.id + '" aria-label="Choose ' + p.name + '">Choose</a>';
     cards.appendChild(card);
   });
 
-  // ---------- Designer ----------
+  // ---------- Designer state ----------
   var form = $("#designer");
   var line1 = $("#line1"), line2 = $("#line2");
-  var pv1 = $("#pv1"), pv2 = $("#pv2");
+  var preview = $("#preview");
   var maxChars = cfg.print.maxChars;
   line1.maxLength = line2.maxLength = maxChars;
+
+  var logoSource = null;   // the uploaded image
+  var logoPrint = null;    // trimmed, print-ready version
+  var logoName = "";
 
   var saved = store(true);
   if (saved) {
     if (typeof saved.line1 === "string") line1.value = saved.line1.slice(0, maxChars);
     if (typeof saved.line2 === "string") line2.value = saved.line2.slice(0, maxChars);
-    ["font", "ink", "pack"].forEach(function (k) {
+    ["font", "ink", "pack", "layout"].forEach(function (k) {
       var r = saved[k] && form.querySelector('input[name="' + k + '"][value="' + saved[k] + '"]');
       if (r) r.checked = true;
     });
@@ -78,66 +88,122 @@
   function pack() { var id = value("pack"); return cfg.packs.filter(function (p) { return p.id === id; })[0] || cfg.packs[0]; }
 
   function design() {
-    return { line1: line1.value.trim(), line2: line2.value.trim(), font: value("font"), ink: value("ink"), pack: pack().id };
+    return {
+      line1: line1.value.trim(),
+      line2: line2.value.trim(),
+      font: value("font"),
+      ink: value("ink"),
+      pack: pack().id,
+      layout: logoPrint ? value("layout") : "none",
+      logoSize: parseFloat($("#logo-size").value),
+      logoInk: $("#logo-ink").checked ? "ink" : "original",
+      hasLogo: !!logoPrint
+    };
   }
 
-  // Shrink text so it always fits between the seams.
-  function fit(el, maxWidth, base) {
-    el.style.fontSize = base + "px";
-    if (!el.textContent) return;
-    var w = el.getComputedTextLength();
-    if (w > maxWidth) el.style.fontSize = Math.max(14, Math.floor(base * maxWidth / w)) + "px";
+  function ballDesign(d) {
+    return {
+      lines: [d.line1, d.line2],
+      font: d.font, ink: d.ink,
+      logo: logoPrint, logoLayout: d.layout, logoSize: d.logoSize, logoInk: d.logoInk
+    };
   }
 
+  var pending = false;
   function render() {
-    var d = design();
-    var two = !!d.line2;
-    var base = d.font === "bold" ? 36 : d.font === "classic" ? 40 : 36;
-    [pv1, pv2].forEach(function (el) {
-      el.setAttribute("class", "ball__text f-" + d.font);
-      el.style.fill = INK[d.ink];
+    if (pending) return;
+    pending = true;
+    requestAnimationFrame(function () {
+      pending = false;
+      var d = design();
+      var b = ballDesign(d);
+      if (!d.line1 && !d.line2 && !logoPrint) b.lines = ["Your words"];
+      fitCanvas(preview, 760);
+      Ball.render(preview, b);
+      updateSummary(d);
+      store(false, { line1: d.line1, line2: d.line2, font: d.font, ink: d.ink, pack: d.pack, layout: value("layout") });
     });
-    pv1.textContent = d.line1 || "Your words";
-    pv1.style.opacity = d.line1 ? 1 : .55;
-    pv2.textContent = d.line2;
-    pv1.setAttribute("y", two ? 150 : 172);
-    pv2.setAttribute("y", 200);
-    fit(pv1, 156, base);
-    fit(pv2, 156, base);
-    // Both lines share the smaller size so they read as one design.
-    if (two) {
-      var size = Math.min(parseFloat(pv1.style.fontSize), parseFloat(pv2.style.fontSize)) + "px";
-      pv1.style.fontSize = pv2.style.fontSize = size;
-    }
+  }
 
+  function updateSummary(d) {
     [line1, line2].forEach(function (el) {
       var c = $("#" + el.id + "-count");
       c.textContent = el.value.length + "/" + maxChars;
       c.classList.toggle("is-full", el.value.length >= maxChars);
     });
-
     var p = pack();
     var free = !cfg.delivery.shippingFee || p.price >= cfg.delivery.freeShippingFrom;
     $("#total").textContent = money(p.price);
-    $("#ship-note").textContent = free
-      ? "Includes GST and free tracked shipping to AU & NZ"
-      : "+ " + money(cfg.delivery.shippingFee) + " tracked shipping. Free over " + money(cfg.delivery.freeShippingFrom);
+    $("#ship-note").textContent = (free ? "Includes GST and complimentary tracked shipping" :
+      "+ " + money(cfg.delivery.shippingFee) + " tracked shipping") + (d.hasLogo ? ". Logo artwork confirmed by email before printing." : ".");
     $("#eta").innerHTML = "Order today, arrives around <b>" + addDays(cfg.delivery.minDays) + " – " + addDays(cfg.delivery.maxDays) + "</b>";
-
-    store(false, d);
   }
 
+  // ---------- Logo upload ----------
+  var fileInput = $("#logo-file");
+  function prepare() {
+    logoPrint = logoSource ? Ball.prepareLogo(logoSource, $("#logo-white").checked) : null;
+    $("#logo-opts").hidden = !logoSource;
+    $("#logo-remove").hidden = !logoSource;
+    $("#logo-name").textContent = logoSource ? logoName : "Add a logo or crest";
+    if (logoSource && !logoPrint) $("#logo-name").textContent = "That image looks empty. Try another file.";
+    render();
+  }
+
+  function loadFile(file) {
+    if (!file) return;
+    if (!/^image\/(png|jpeg|svg\+xml|webp)$/.test(file.type)) {
+      $("#logo-name").textContent = "Please choose a PNG, JPG, SVG or WebP image.";
+      return;
+    }
+    if (file.size > MAX_LOGO_BYTES) {
+      $("#logo-name").textContent = "That file is over 5 MB. Please choose a smaller one.";
+      return;
+    }
+    var url = URL.createObjectURL(file);
+    var img = new Image();
+    img.onload = function () {
+      // SVGs without a size report 0; give them a sensible one.
+      if (!img.width || !img.height) { img.width = 600; img.height = 600; }
+      logoSource = img;
+      logoName = file.name;
+      if (file.type === "image/jpeg") $("#logo-white").checked = true;
+      prepare();
+      URL.revokeObjectURL(url);
+    };
+    img.onerror = function () {
+      $("#logo-name").textContent = "We couldn't read that image. Please try another file.";
+      URL.revokeObjectURL(url);
+    };
+    img.src = url;
+  }
+
+  fileInput.addEventListener("change", function () { loadFile(fileInput.files[0]); });
+  var drop = $("#upload");
+  ["dragenter", "dragover"].forEach(function (t) {
+    drop.addEventListener(t, function (e) { e.preventDefault(); drop.classList.add("is-over"); });
+  });
+  ["dragleave", "drop"].forEach(function (t) {
+    drop.addEventListener(t, function (e) { e.preventDefault(); drop.classList.remove("is-over"); });
+  });
+  drop.addEventListener("drop", function (e) { if (e.dataTransfer && e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]); });
+  $("#logo-remove").addEventListener("click", function () {
+    logoSource = null; logoPrint = null; logoName = ""; fileInput.value = "";
+    prepare();
+  });
+  $("#logo-white").addEventListener("change", prepare);
+
+  // ---------- Ordering ----------
   function problem(d) {
-    if (!d.line1) return "Add some text for line 1.";
+    if (!d.line1 && !d.line2 && !d.hasLogo) return "Add some words or a logo.";
     if (!ALLOWED.test(d.line1) || !ALLOWED.test(d.line2)) return "Please use letters, numbers and simple punctuation only.";
     return "";
   }
 
-  // Compact, URL-safe design code that fits Stripe's client_reference_id (letters, numbers, - and _ only).
+  // Compact, URL-safe design code for Stripe's client_reference_id (letters, numbers, - and _ only).
   function designCode(d) {
-    var raw = ["PK1", d.line1, d.line2, d.font, d.ink, d.pack].join("|");
-    var b64 = btoa(unescape(encodeURIComponent(raw))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-    return b64;
+    var raw = ["PK2", d.line1, d.line2, d.font, d.ink, d.pack, d.hasLogo ? d.layout + ":" + d.logoInk : ""].join("|");
+    return btoa(unescape(encodeURIComponent(raw))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
   }
 
   function emailLink(d) {
@@ -145,22 +211,22 @@
     var body = [
       "Hi Pinkaholic, I'd like to order:",
       "",
-      "Pack: " + p.name + " (" + money(p.price) + ")",
-      "Line 1: " + d.line1,
+      "Set: " + p.name + " (" + p.qty + (p.qty > 1 ? " balls, " : " ball, ") + money(p.price) + ")",
+      "Line 1: " + (d.line1 || "-"),
       "Line 2: " + (d.line2 || "-"),
-      "Print style: " + d.font,
-      "Ink: " + d.ink,
+      "Lettering: " + FONT_NAMES[d.font],
+      "Ink: " + INK_NAMES[d.ink],
+      "Logo: " + (d.hasLogo ? "yes, " + d.layout + ", printed in " + (d.logoInk === "ink" ? "the ink colour" : "its original colours") + " (file attached)" : "no"),
       "",
       "Deliver to (name, address, phone):",
       ""
     ].join("\n");
-    return "mailto:" + cfg.contactEmail + "?subject=" + encodeURIComponent("Pinkaholic order: " + d.line1) + "&body=" + encodeURIComponent(body);
+    return "mailto:" + cfg.contactEmail + "?subject=" + encodeURIComponent("Pinkaholic order: " + (d.line1 || "logo ball")) + "&body=" + encodeURIComponent(body);
   }
 
   var btn = $("#order-btn");
-  var soon = $("#soon");
   var live = cfg.checkout.provider === "stripe";
-  if (!live) btn.textContent = "Checkout opens soon";
+  if (!live) btn.textContent = "Request this design";
 
   form.addEventListener("input", render);
   form.addEventListener("change", render);
@@ -170,7 +236,6 @@
     var err = problem(d);
     line1.setCustomValidity(err);
     if (err) { line1.reportValidity(); return; }
-
     var p = pack();
     if (live && p.link) {
       var sep = p.link.indexOf("?") === -1 ? "?" : "&";
@@ -178,61 +243,69 @@
       return;
     }
     $("#email-order").href = emailLink(d);
-    soon.hidden = false;
+    $("#soon-logo").hidden = !d.hasLogo;
+    $("#soon").hidden = false;
   });
   line1.addEventListener("input", function () { line1.setCustomValidity(""); });
 
-  // Pack buttons and "Try" buttons fill the designer.
+  // Set buttons pick a set; occasion buttons load a sample design.
   document.addEventListener("click", function (e) {
-    var t = e.target.closest("[data-pack], [data-try]");
-    if (!t) return;
-    if (t.dataset.pack) {
+    var t = e.target.closest("[data-pack]");
+    if (t) {
       var r = form.querySelector('input[name="pack"][value="' + t.dataset.pack + '"]');
       if (r) r.checked = true;
+      render();
     }
-    if (t.dataset.try) {
-      line1.value = t.dataset.try.slice(0, maxChars);
-      line2.value = "";
+    var occ = e.target.closest(".occ .link");
+    if (occ) {
+      var s = JSON.parse(occ.closest(".occ").dataset.sample);
+      line1.value = s.line1; line2.value = s.line2;
+      ["font", "ink"].forEach(function (k) {
+        var r2 = form.querySelector('input[name="' + k + '"][value="' + s[k] + '"]');
+        if (r2) r2.checked = true;
+      });
       $("#design").scrollIntoView({ behavior: "smooth" });
+      render();
     }
+  });
+
+  // ---------- Hero and occasion balls ----------
+  var hero = $("#hero-ball");
+  var heroSamples = [
+    { lines: ["Chloe & Jack", "12.03.27"], font: "script", ink: "wine" },
+    { lines: ["Champion", "2026"], font: "caps", ink: "gold" },
+    { lines: ["Love all", ""], font: "serif", ink: "white" }
+  ];
+  var heroIndex = 0;
+  function drawHero() { fitCanvas(hero, 680); Ball.render(hero, heroSamples[heroIndex]); }
+  function drawOccasions() {
+    $$(".occ").forEach(function (o) {
+      var s = JSON.parse(o.dataset.sample);
+      var c = $("canvas", o);
+      fitCanvas(c, 420);
+      Ball.render(c, { lines: [s.line1, s.line2], font: s.font, ink: s.ink });
+    });
+  }
+
+  // ---------- Start ----------
+  Ball.ready.then(function () {
     render();
+    drawHero();
+    // Render the smaller balls after the main ones so the page settles quickly.
+    setTimeout(drawOccasions, 60);
+    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!reduce) {
+      setInterval(function () {
+        if (document.hidden) return;
+        heroIndex = (heroIndex + 1) % heroSamples.length;
+        drawHero();
+      }, 4200);
+    }
   });
 
-  // ---------- Gift idea tabs ----------
-  var tabs = $$('[role="tab"]');
-  function select(tab) {
-    tabs.forEach(function (t) {
-      var on = t === tab;
-      t.setAttribute("aria-selected", on);
-      t.tabIndex = on ? 0 : -1;
-      $("#" + t.getAttribute("aria-controls")).hidden = !on;
-    });
-  }
-  tabs.forEach(function (t, i) {
-    t.addEventListener("click", function () { select(t); });
-    t.addEventListener("keydown", function (e) {
-      var n = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
-      if (!n) return;
-      var next = tabs[(i + n + tabs.length) % tabs.length];
-      select(next);
-      next.focus();
-    });
+  var resizeTimer;
+  window.addEventListener("resize", function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function () { render(); drawHero(); drawOccasions(); }, 200);
   });
-
-  // ---------- Hero ball cycles sample text ----------
-  var cycle = $("[data-cycle]");
-  var samples = ["Ace Mum", "Bride Squad", "Coach Kim", "Love all", "Net Queen"];
-  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (cycle && !reduce) {
-    var n = 0;
-    setInterval(function () {
-      n = (n + 1) % samples.length;
-      cycle.textContent = samples[n];
-      fit(cycle, 150, 36);
-    }, 2600);
-  }
-
-  // Fonts change text widths, so fit again once they've loaded.
-  render();
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { render(); if (cycle) fit(cycle, 150, 36); });
 })();

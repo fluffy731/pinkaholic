@@ -13,10 +13,10 @@ window.PINKAHOLIC = {
 
   // Prices are AUD and include GST and tracked shipping (see docs/research/market-and-pricing.md). "link" is the checkout URL for that pack (e.g. a Stripe Payment Link).
   packs: [
-    { id: "single", name: "Single ball", qty: 1, price: 24.95, note: "A little pink gift", link: "" },
-    { id: "can", name: "Can of 3", qty: 3, price: 39.95, note: "Our favourite. Comes in a gift can", link: "", featured: true },
-    { id: "six", name: "Half dozen", qty: 6, price: 69.95, note: "Hens, birthdays, doubles teams", link: "" },
-    { id: "twelve", name: "Club dozen", qty: 12, price: 119.95, note: "Clubs, events, party favours", link: "" }
+    { id: "single", name: "The Single", qty: 1, price: 24.95, note: "One ball, ready to gift", link: "" },
+    { id: "can", name: "The Trio", qty: 3, price: 39.95, note: "Three balls in a gift can", link: "", featured: true },
+    { id: "six", name: "The Six", qty: 6, price: 69.95, note: "For hens, birthdays and doubles teams", link: "" },
+    { id: "twelve", name: "The Dozen", qty: 12, price: 119.95, note: "For clubs, events and favours", link: "" }
   ],
 
   // "none" shows "Checkout opens soon" and lets people email their design.
