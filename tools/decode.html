@@ -1,0 +1,21 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Decode order design</title>
+<style>body{font:16px/1.5 system-ui;margin:24px;max-width:640px}input{width:100%;font:inherit;padding:10px}pre{background:#FFEFEA;padding:12px;border-radius:8px}</style>
+<h1>Decode a Pinkaholic design code</h1>
+<p>Paste the <code>client_reference_id</code> from a Stripe payment. Open this file locally; it isn't published.</p>
+<input id="code" placeholder="e.g. UEsxfEdhbWUsIHNldCwgTXVtfH...">
+<pre id="out"></pre>
+<script>
+document.getElementById("code").addEventListener("input", function (e) {
+  var out = document.getElementById("out");
+  try {
+    var b = e.target.value.trim().replace(/-/g, "+").replace(/_/g, "/");
+    var raw = decodeURIComponent(escape(atob(b)));
+    var f = raw.split("|");
+    out.textContent = f[0] !== "PK1" ? "Not a Pinkaholic code" :
+      "Line 1: " + f[1] + "\nLine 2: " + (f[2] || "-") + "\nStyle:  " + f[3] + "\nInk:    " + f[4] + "\nPack:   " + f[5];
+  } catch (err) { out.textContent = "Can't read that code"; }
+});
+</script>

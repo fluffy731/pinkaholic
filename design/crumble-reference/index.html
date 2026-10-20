@@ -1,0 +1,717 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pinkaholic Homepage</title>
+<meta name="description" content="Style mockup for the Pinkaholic fashion store, inspired by crumble.co.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;1,9..144,500&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --milk: #FFF8F3;
+    --shell: #FFEFEA;
+    --white: #FFFFFF;
+    --ink: #4A1230;
+    --ink-soft: #7A4A5E;
+    --ballet: #F9D3DE;
+    --bubblegum: #FF8FB8;
+    --raspberry: #D63A6E;
+    --cherry: #D42A47;
+    --lilac: #D9C8F2;
+    --butter: #FFEDB0;
+    --pistachio: #D6E6C3;
+
+    --serif: "Fraunces", Georgia, serif;
+    --sans: "Poppins", ui-sans-serif, system-ui, sans-serif;
+    --pebble: 34px 40px 30px 44px / 40px 30px 44px 34px;
+    --arch: 999px 999px 28px 28px;
+    --gutter: clamp(16px, 4vw, 60px);
+    --max: 1240px;
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--milk);
+    color: var(--ink);
+    font: 400 16px/1.6 var(--sans);
+    overflow-x: hidden;
+  }
+  img, svg { display: block; }
+  a { color: inherit; }
+  button { font: inherit; color: inherit; cursor: pointer; }
+  :focus-visible { outline: 3px solid var(--raspberry); outline-offset: 3px; }
+
+  .wrap { max-width: var(--max); margin: 0 auto; padding: 0 var(--gutter); }
+  .section { padding: clamp(48px, 7vw, 96px) 0; }
+  .h-display, .h-section {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    margin: 0;
+  }
+  .h-display { font-size: clamp(40px, 6vw, 68px); line-height: 1.04; }
+  .h-section { font-size: clamp(30px, 4vw, 46px); line-height: 1.1; text-align: center; }
+  .accent { color: var(--raspberry); }
+  .lede { color: var(--ink-soft); text-align: center; max-width: 560px; margin: 12px auto 0; }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    border: 0; border-radius: 999px;
+    padding: 16px 34px;
+    font: 600 15px/1 var(--sans); letter-spacing: 0.06em; text-transform: uppercase;
+    text-decoration: none;
+    background: var(--bubblegum); color: var(--ink);
+    transition: transform .15s ease, background .15s ease;
+  }
+  .btn:hover { background: #FF7AAA; transform: translateY(-2px); }
+  .btn--ghost { background: transparent; box-shadow: inset 0 0 0 1.5px var(--ink); }
+  .btn--ghost:hover { background: var(--ballet); }
+
+  .sticker {
+    position: absolute;
+    display: inline-block;
+    padding: 10px 18px;
+    border: 1.5px solid var(--ink);
+    border-radius: 999px;
+    font: italic 500 17px/1.1 var(--serif);
+    white-space: nowrap;
+    box-shadow: 3px 3px 0 var(--ink);
+  }
+
+  .gingham {
+    height: 28px;
+    background:
+      linear-gradient(90deg, rgba(249,211,222,.7) 50%, transparent 0) 0 0 / 28px 28px,
+      linear-gradient(rgba(249,211,222,.7) 50%, transparent 0) 0 0 / 28px 28px,
+      var(--milk);
+  }
+
+  /* Garment illustrations: .g is the fabric, .line is stitching */
+  .g { stroke: var(--ink); stroke-width: 1.5; stroke-linejoin: round; }
+  .line { fill: none; stroke: var(--ink); stroke-width: 1.5; stroke-linecap: round; }
+
+  /* ---------- Marquee ---------- */
+  .marquee { background: var(--lilac); overflow: hidden; height: 40px; display: flex; align-items: center; font-size: 14px; }
+  .marquee__track { display: flex; gap: 48px; white-space: nowrap; animation: scroll 32s linear infinite; padding-left: 48px; }
+  .marquee:hover .marquee__track { animation-play-state: paused; }
+  .marquee b { font-weight: 600; }
+  @keyframes scroll { to { transform: translateX(-50%); } }
+  @media (prefers-reduced-motion: reduce) { .marquee__track { animation: none; } }
+
+  /* ---------- Header ---------- */
+  .header__top { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 18px var(--gutter); }
+  .header__util { display: flex; gap: 28px; font-size: 14px; font-weight: 500; }
+  .header__util a { text-decoration: none; }
+  .header__util a:hover { text-decoration: underline; text-underline-offset: 4px; }
+  .wordmark { font: 500 22px/1 var(--sans); letter-spacing: 0.4em; text-transform: uppercase; text-decoration: none; padding-left: 0.4em; }
+  .wordmark span { color: var(--raspberry); }
+  .header__icons { display: flex; justify-content: flex-end; gap: 18px; align-items: center; }
+  .icon-btn { background: none; border: 0; padding: 4px; position: relative; }
+  .icon-btn svg { width: 24px; height: 24px; fill: none; stroke: var(--ink); stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+  .bag-count { position: absolute; top: -2px; right: -6px; background: var(--bubblegum); font-size: 11px; font-weight: 600; width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; }
+  .header__nav { background: var(--ballet); }
+  .header__nav ul { list-style: none; margin: 0 auto; padding: 12px var(--gutter); display: flex; justify-content: center; gap: clamp(18px, 3vw, 44px); font-size: 14px; font-weight: 500; max-width: var(--max); }
+  .header__nav a { text-decoration: none; }
+  .header__nav a:hover { color: var(--raspberry); }
+  .header__nav .sale { color: var(--cherry); font-weight: 600; }
+  .menu-btn { display: none; }
+
+  /* ---------- Hero ---------- */
+  .hero { background: var(--shell); overflow: hidden; }
+  .hero__grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 40px; align-items: center; min-height: 560px; padding-top: 48px; padding-bottom: 48px; }
+  .hero__eyebrow { display: inline-block; font-size: 13px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; background: var(--butter); border-radius: 999px; padding: 6px 14px; margin-bottom: 22px; }
+  .hero p { font-size: 18px; color: var(--ink-soft); max-width: 460px; margin: 22px 0 32px; }
+  .hero__ctas { display: flex; gap: 14px; flex-wrap: wrap; }
+  .hero__art { position: relative; aspect-ratio: 1 / 1; max-width: 520px; width: 100%; justify-self: center; }
+  .hero__blob { position: absolute; inset: 0; background: var(--ballet); border-radius: 46% 54% 42% 58% / 55% 44% 56% 45%; }
+  .hero__art svg.garment { position: absolute; }
+  .hero__art .s1 { top: 8%; left: -4%; background: var(--butter); transform: rotate(-8deg); }
+  .hero__art .s2 { bottom: 10%; right: -2%; background: var(--pistachio); transform: rotate(6deg); }
+  .hero__art .s3 { top: 46%; left: -8%; background: var(--lilac); transform: rotate(-4deg); font-size: 15px; }
+
+  /* ---------- Trust strip ---------- */
+  .trust { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; padding-top: 32px; padding-bottom: 32px; text-align: center; font-size: 14px; font-weight: 500; line-height: 1.35; }
+  .trust svg { width: 44px; height: 44px; margin: 0 auto 10px; fill: none; stroke: var(--ink); stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+  .trust svg .fill { fill: var(--ballet); }
+
+  /* ---------- Product cards ---------- */
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px 24px; margin-top: 44px; }
+  .card { position: relative; --g: var(--bubblegum); }
+  .card__img { position: relative; aspect-ratio: 4 / 5; background: var(--shell); border-radius: var(--pebble); display: grid; place-items: center; overflow: hidden; transition: transform .25s ease; }
+  .card:hover .card__img { transform: rotate(-1deg) scale(1.01); }
+  .card__img svg { width: 62%; height: auto; fill: var(--g); }
+  .pill { position: absolute; top: 14px; right: 14px; background: var(--cherry); color: var(--white); font-size: 12px; font-weight: 600; letter-spacing: 0.04em; padding: 6px 12px; border-radius: 999px; }
+  .tag-new { position: absolute; top: 14px; left: 14px; background: var(--butter); font-size: 11px; font-weight: 600; letter-spacing: 0.08em; padding: 5px 10px; border-radius: 999px; }
+  .card h3 { font: 500 20px/1.25 var(--serif); margin: 16px 0 6px; }
+  .card h3 a { text-decoration: none; }
+  .price { font-weight: 600; display: flex; gap: 8px; align-items: baseline; }
+  .price s { color: var(--ink-soft); font-weight: 400; font-size: 14px; }
+  .swatches { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .swatch { width: 24px; height: 24px; border-radius: 50%; border: 0; padding: 0; box-shadow: 0 0 0 1.5px var(--milk), 0 0 0 2.5px rgba(74,18,48,.25); }
+  .swatch[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--milk), 0 0 0 3.5px var(--ink); }
+  .swatch-name { font-size: 13px; color: var(--ink-soft); margin-top: 6px; min-height: 1.4em; }
+  .center { text-align: center; margin-top: 44px; }
+
+  /* ---------- Reviews ---------- */
+  .reviews { background: var(--butter); }
+  .reviews__row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 44px; }
+  .review { background: var(--white); border-radius: 24px; padding: 28px; display: flex; flex-direction: column; gap: 10px; }
+  .stars { color: var(--raspberry); letter-spacing: 3px; font-size: 18px; }
+  .review b { font-size: 17px; }
+  .review p { margin: 0; color: var(--ink-soft); flex: 1; }
+  .review__prod { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 500; padding-top: 14px; border-top: 1px solid var(--shell); }
+  .review__prod i { width: 28px; height: 28px; border-radius: 8px; display: block; }
+  .score { text-align: center; margin-top: 10px; font-weight: 500; }
+
+  /* ---------- Categories ---------- */
+  .cats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-top: 44px; }
+  .cat { text-decoration: none; text-align: center; }
+  .cat__frame { aspect-ratio: 3 / 4; border-radius: var(--arch); display: grid; place-items: center; border: 1.5px solid var(--ink); transition: transform .2s ease; }
+  .cat:hover .cat__frame { transform: translateY(-6px); }
+  .cat__frame svg { width: 56%; }
+  .cat span { display: inline-block; margin-top: 14px; font: italic 500 22px/1 var(--serif); }
+
+  /* ---------- Press ---------- */
+  .press { background: var(--lilac); padding: 26px 0; }
+  .press .wrap { display: flex; justify-content: space-around; align-items: center; gap: 28px; flex-wrap: wrap; }
+  .press span { font-weight: 600; font-size: 20px; opacity: .85; }
+  .press .p1 { font-family: var(--serif); font-style: italic; font-size: 24px; }
+  .press .p2 { letter-spacing: .3em; font-size: 15px; }
+  .press .p3 { font-family: var(--serif); font-size: 22px; text-transform: uppercase; }
+  .press .p4 { font-size: 24px; letter-spacing: -0.02em; }
+
+  /* ---------- Shade finder ---------- */
+  .tabs { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: 32px; }
+  .tab { display: flex; align-items: center; gap: 10px; border: 0; background: transparent; border-radius: 999px; padding: 8px 20px 8px 8px; font-weight: 500; font-size: 15px; }
+  .tab i { width: 36px; height: 36px; border-radius: 50%; display: block; border: 1.5px solid var(--ink); }
+  .tab[aria-selected="true"] { background: var(--ballet); }
+  .finder { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; margin-top: 44px; }
+  .checks { list-style: none; margin: 0; padding: 0; }
+  .checks li { display: grid; grid-template-columns: 32px 1fr; gap: 14px; padding: 18px 0; border-bottom: 1px solid var(--ballet); }
+  .checks li:last-child { border-bottom: 0; }
+  .checks svg { width: 28px; height: 28px; fill: var(--pistachio); stroke: var(--ink); stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+  .checks b { font: 500 22px/1.2 var(--serif); display: block; }
+  .checks span { color: var(--ink-soft); font-size: 14px; }
+  .finder__art { position: relative; aspect-ratio: 1; border-radius: var(--pebble); display: grid; place-items: center; transition: background .3s ease; }
+  .finder__art svg { width: 52%; }
+  .finder__art .sticker { top: 8%; right: 6%; background: var(--butter); transform: rotate(7deg); }
+
+  /* ---------- Why ---------- */
+  .why { background: var(--shell); }
+  .why__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
+  .why__art { position: relative; aspect-ratio: 5 / 4; background: var(--bubblegum); border-radius: var(--pebble); display: grid; place-items: center; }
+  .why__art svg { width: 40%; }
+  .badge-round { position: absolute; top: -26px; left: -18px; width: 132px; height: 132px; border-radius: 50%; background: var(--raspberry); color: var(--milk); display: grid; place-items: center; text-align: center; font: italic 500 22px/1.05 var(--serif); transform: rotate(-12deg); border: 1.5px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); }
+  .why .h-section { text-align: left; margin-bottom: 18px; }
+  details { border-bottom: 1.5px solid var(--ink); }
+  details:first-of-type { border-top: 1.5px solid var(--ink); }
+  summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 18px 0; font: 500 21px/1.25 var(--serif); }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; font: 400 26px/1 var(--sans); }
+  details[open] summary::after { content: "\2212"; }
+  details p { margin: 0 0 20px; color: var(--ink-soft); }
+
+  /* ---------- UGC ---------- */
+  .ugc { background: var(--lilac); }
+  .ugc__row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 18px; margin-top: 44px; }
+  .ugc__clip { aspect-ratio: 9 / 14; border-radius: 22px; position: relative; overflow: hidden; display: grid; place-items: center; }
+  .ugc__clip svg.garment { width: 58%; }
+  .play { position: absolute; top: 12px; left: 12px; width: 34px; height: 34px; border-radius: 50%; background: rgba(255,248,243,.85); display: grid; place-items: center; }
+  .play svg { width: 14px; height: 14px; fill: var(--ink); }
+  .handle { position: absolute; bottom: 12px; left: 12px; font-size: 12px; font-weight: 600; background: rgba(255,248,243,.85); padding: 4px 10px; border-radius: 999px; }
+  .ugc__prod { background: var(--white); border-radius: 14px; padding: 10px 12px; margin-top: 10px; display: flex; gap: 10px; align-items: center; font-size: 13px; line-height: 1.3; }
+  .ugc__prod i { width: 36px; height: 36px; border-radius: 10px; flex: none; display: block; }
+  .ugc__prod b { display: block; font-weight: 600; }
+  .ugc__prod s { color: var(--ink-soft); }
+
+  /* ---------- Real wardrobes ---------- */
+  .real { background: var(--pistachio); }
+  .real__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+  .real__hanger { position: relative; aspect-ratio: 1; max-width: 480px; margin: 0 auto; width: 100%; }
+  .real__hanger svg { width: 100%; height: 100%; }
+  .real__hanger .t1 { top: 14%; left: 0; background: var(--lilac); transform: rotate(-7deg); }
+  .real__hanger .t2 { top: 10%; right: 0; background: var(--butter); transform: rotate(6deg); }
+  .real__hanger .t3 { bottom: 14%; left: 2%; background: var(--ballet); transform: rotate(4deg); }
+  .real__hanger .t4 { bottom: 8%; right: 4%; background: var(--white); transform: rotate(-5deg); }
+  .real blockquote { margin: 0; font: italic 500 clamp(22px, 2.4vw, 28px)/1.4 var(--serif); }
+  .real cite { display: block; margin-top: 18px; font: 500 15px var(--sans); font-style: normal; color: var(--ink-soft); }
+  .real .h-section { text-align: left; margin-bottom: 24px; }
+
+  /* ---------- Newsletter ---------- */
+  .news { background: var(--bubblegum); border-radius: 36px; padding: clamp(32px, 5vw, 64px); text-align: center; position: relative; }
+  .news .h-section { margin-bottom: 10px; }
+  .news p { margin: 0 auto 26px; max-width: 520px; }
+  .news form { display: flex; gap: 10px; max-width: 520px; margin: 0 auto; }
+  .news input { flex: 1; min-width: 0; border: 1.5px solid var(--ink); border-radius: 999px; padding: 14px 22px; font: inherit; background: var(--milk); color: var(--ink); }
+  .news .btn { background: var(--ink); color: var(--milk); }
+  .news .btn:hover { background: #2E0A1D; }
+  .news small { display: block; margin-top: 14px; font-size: 13px; }
+
+  /* ---------- Footer ---------- */
+  footer { background: var(--ink); color: var(--milk); padding: 64px 0 32px; margin-top: clamp(48px, 7vw, 96px); }
+  .foot { display: grid; grid-template-columns: 1.4fr repeat(3, 1fr); gap: 32px; }
+  footer .wordmark span { color: var(--bubblegum); }
+  footer p { color: rgba(255,248,243,.75); font-size: 14px; max-width: 280px; }
+  footer h4 { font: italic 500 20px var(--serif); margin: 0 0 14px; }
+  footer ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; font-size: 14px; }
+  footer ul a { text-decoration: none; opacity: .8; }
+  footer ul a:hover { opacity: 1; text-decoration: underline; }
+  .foot__base { border-top: 1px solid rgba(255,248,243,.2); margin-top: 48px; padding-top: 22px; font-size: 13px; opacity: .7; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 960px) {
+    .grid, .cats { grid-template-columns: repeat(2, 1fr); }
+    .reviews__row { grid-template-columns: 1fr; }
+    .ugc__row { grid-template-columns: repeat(5, 62%); overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 8px; }
+    .ugc__row > * { scroll-snap-align: start; }
+    .foot { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 760px) {
+    .header__util { display: none; }
+    .menu-btn { display: inline-block; justify-self: start; }
+    .header__nav ul { justify-content: flex-start; overflow-x: auto; white-space: nowrap; }
+    .wordmark { font-size: 17px; letter-spacing: 0.28em; padding-left: 0.28em; }
+    .header__icons { gap: 8px; }
+    .header__icons [aria-label="Account"] { display: none; }
+    .tabs { flex-wrap: nowrap; justify-content: flex-start; overflow-x: auto; margin-left: calc(-1 * var(--gutter)); margin-right: calc(-1 * var(--gutter)); padding: 0 var(--gutter); }
+    .tab { flex: none; }
+    .hero__grid, .finder, .why__grid, .real__grid { grid-template-columns: 1fr; }
+    .hero__grid { min-height: 0; padding-top: 32px; gap: 28px; }
+    .hero__art { max-width: 340px; }
+    .trust { grid-template-columns: repeat(2, 1fr); }
+    .grid { gap: 22px 14px; }
+    .card h3 { font-size: 17px; }
+    .pill { font-size: 11px; padding: 5px 9px; top: 10px; right: 10px; }
+    .why__art { margin: 20px 10px 0; }
+    .badge-round { width: 104px; height: 104px; font-size: 18px; }
+    .news form { flex-direction: column; }
+    .news .btn { justify-content: center; }
+    .foot { grid-template-columns: 1fr; }
+    .sticker { font-size: 14px; padding: 8px 14px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Shared garment shapes and fabric patterns -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <pattern id="gingham" width="16" height="16" patternUnits="userSpaceOnUse">
+      <rect width="16" height="16" fill="#FFF8F3"/>
+      <rect width="8" height="16" fill="#F25C8F" opacity=".45"/>
+      <rect width="16" height="8" fill="#F25C8F" opacity=".45"/>
+    </pattern>
+    <pattern id="dots" width="14" height="14" patternUnits="userSpaceOnUse">
+      <rect width="14" height="14" fill="#FF8FB8"/>
+      <circle cx="4" cy="4" r="2.2" fill="#FFF8F3"/>
+      <circle cx="11" cy="11" r="2.2" fill="#FFF8F3"/>
+    </pattern>
+    <pattern id="leopard" width="22" height="22" patternUnits="userSpaceOnUse">
+      <rect width="22" height="22" fill="#F9D3DE"/>
+      <path d="M4 5c2-2 5-1 5 1s-3 3-5 2-1-2 0-3zM14 13c2-1 5 0 4 2s-4 3-5 1 0-2 1-3zM3 16c1-1 3 0 3 1s-2 2-3 1z" fill="#D63A6E"/>
+    </pattern>
+    <symbol id="dress" viewBox="0 0 100 120">
+      <path class="g" d="M38 8h4l3 17h10l3-17h4l3 22c1 8-2 13-6 16l20 62c-22 8-42 8-64 0l20-62c-4-3-7-8-6-16z"/>
+      <path class="line" d="M37 46c8 3 18 3 26 0"/>
+    </symbol>
+    <symbol id="cardigan" viewBox="0 0 100 120">
+      <path class="g" d="M32 12c6 6 30 6 36 0l22 12 6 50-13 2-4-30v62H21V46l-4 30-13-2 6-50z"/>
+      <path class="line" d="M50 18v90"/>
+      <circle cx="44" cy="40" r="2.4" fill="#4A1230"/><circle cx="44" cy="58" r="2.4" fill="#4A1230"/><circle cx="44" cy="76" r="2.4" fill="#4A1230"/>
+    </symbol>
+    <symbol id="bag" viewBox="0 0 100 120">
+      <path class="line" d="M34 46c0-30 32-30 32 0" style="stroke-width:5"/>
+      <path class="g" d="M18 44h64l8 64H10z"/>
+      <path class="line" d="M24 60h52"/>
+    </symbol>
+    <symbol id="skirt" viewBox="0 0 100 120">
+      <path class="g" d="M28 20h44l3 12 17 70c-28 10-56 10-84 0l17-70z"/>
+      <path class="line" d="M25 32h50M40 32l-8 72M50 32v76M60 32l8 72"/>
+    </symbol>
+    <symbol id="tee" viewBox="0 0 100 120">
+      <path class="g" d="M34 14c6 8 26 8 32 0l26 14-9 18-11-5v66H28V41l-11 5-9-18z"/>
+      <path class="line" d="M38 16c4 6 20 6 24 0"/>
+    </symbol>
+    <symbol id="heels" viewBox="0 0 100 120">
+      <path class="g" d="M8 82c14-24 40-22 58-12l22 4c6 2 6 10 0 12H18c-8 0-12-1-10-4z"/>
+      <path class="g" d="M76 86l-4 26h7l7-26z"/>
+      <path class="line" d="M30 70c6 8 16 12 30 12"/>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- Announcement marquee -->
+<div class="marquee" role="region" aria-label="Current offers">
+  <div class="marquee__track">
+    <span><b>New Drop</b> Cherry Gingham collection is here</span>
+    <span><b>Free Shipping</b> on orders over $100</span>
+    <span><b>Pink Week</b> Up to 40% off dresses</span>
+    <span><b>Afterpay</b> 4 easy payments, no stress</span>
+    <span><b>New Drop</b> Cherry Gingham collection is here</span>
+    <span><b>Free Shipping</b> on orders over $100</span>
+    <span><b>Pink Week</b> Up to 40% off dresses</span>
+    <span><b>Afterpay</b> 4 easy payments, no stress</span>
+  </div>
+</div>
+
+<!-- Header -->
+<header>
+  <div class="header__top">
+    <nav class="header__util" aria-label="Utility">
+      <a href="#">About</a><a href="#reviews">Reviews</a><a href="#">Lookbook</a>
+    </nav>
+    <button class="icon-btn menu-btn" aria-label="Menu"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    <a class="wordmark" href="#">Pink<span>a</span>holic</a>
+    <div class="header__icons">
+      <button class="icon-btn" aria-label="Search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button>
+      <button class="icon-btn" aria-label="Account"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg></button>
+      <button class="icon-btn" aria-label="Bag, 2 items"><svg viewBox="0 0 24 24"><path d="M5 8h14l-1 13H6z"/><path d="M9 8a3 3 0 0 1 6 0"/></svg><span class="bag-count">2</span></button>
+    </div>
+  </div>
+  <nav class="header__nav" aria-label="Shop">
+    <ul>
+      <li><a href="#">New In</a></li>
+      <li><a href="#">Dresses</a></li>
+      <li><a href="#">Tops</a></li>
+      <li><a href="#">Knitwear</a></li>
+      <li><a href="#">Skirts</a></li>
+      <li><a href="#">Bags</a></li>
+      <li><a href="#">Shoes</a></li>
+      <li><a href="#" class="sale">Pink Week Sale</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <!-- Hero -->
+  <section class="hero">
+    <div class="wrap hero__grid">
+      <div>
+        <span class="hero__eyebrow">The Cherry Gingham Drop</span>
+        <h1 class="h-display">Pink is a <span class="accent">personality</span>, not a phase</h1>
+        <p>Feel-good fabrics in every shade of pink, cut for real bodies and real Saturdays. Now up to 40% off for Pink Week.</p>
+        <div class="hero__ctas">
+          <a class="btn" href="#picks">Shop up to 40% off</a>
+          <a class="btn btn--ghost" href="#finder">Find your pink</a>
+        </div>
+      </div>
+      <div class="hero__art" aria-hidden="true">
+        <div class="hero__blob"></div>
+        <svg class="garment" viewBox="0 0 100 120" style="width:58%;left:22%;top:12%"><use href="#dress" fill="url(#gingham)"/></svg>
+        <svg class="garment" viewBox="0 0 100 120" style="width:30%;right:2%;top:16%;transform:rotate(10deg)"><g style="fill:#D63A6E"><use href="#bag"/></g></svg>
+        <svg class="garment" viewBox="0 0 100 120" style="width:30%;left:6%;bottom:2%;transform:rotate(-8deg)"><g style="fill:#FF8FB8"><use href="#heels"/></g></svg>
+        <span class="sticker s1">100% pink-certified</span>
+        <span class="sticker s2">Made to twirl</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trust strip -->
+  <div class="wrap trust">
+    <div><svg viewBox="0 0 48 48"><rect class="fill" x="4" y="14" width="26" height="18" rx="3"/><path d="M30 20h7l6 6v6H30"/><circle cx="13" cy="35" r="4"/><circle cx="36" cy="35" r="4"/></svg>Free shipping<br>over $100</div>
+    <div><svg viewBox="0 0 48 48"><circle class="fill" cx="24" cy="24" r="16"/><path d="M14 20a11 11 0 1 1 0 9"/><path d="M14 13v7h7"/></svg>30-day<br>free returns</div>
+    <div><svg viewBox="0 0 48 48"><path class="fill" d="M24 40S8 30 8 19a8 8 0 0 1 16-3 8 8 0 0 1 16 3c0 11-16 21-16 21z"/><path d="M20 22l3 3 6-6"/></svg>Ethically made,<br>kind fabrics</div>
+    <div><svg viewBox="0 0 48 48"><rect class="fill" x="6" y="12" width="36" height="24" rx="4"/><path d="M6 20h36M12 30h8"/></svg>Afterpay &amp;<br>Zip available</div>
+  </div>
+
+  <div class="gingham" aria-hidden="true"></div>
+
+  <!-- Pink Picks -->
+  <section class="section" id="picks">
+    <div class="wrap">
+      <h2 class="h-section">Pink <span class="accent">Picks</span></h2>
+      <p class="lede">Our most-loved pieces this week, each in a family of named shades.</p>
+      <div class="grid">
+        <article class="card">
+          <div class="card__img"><span class="pill">SAVE $40</span><svg viewBox="0 0 100 120"><use href="#dress"/></svg></div>
+          <h3><a href="#">The Sunday Sundress</a></h3>
+          <div class="price">$89 <s>$129</s></div>
+          <div class="swatches" data-swatches></div>
+          <div class="swatch-name"></div>
+        </article>
+        <article class="card">
+          <div class="card__img"><span class="tag-new">NEW</span><span class="pill">SAVE $30</span><svg viewBox="0 0 100 120"><use href="#cardigan"/></svg></div>
+          <h3><a href="#">Marshmallow Knit Cardigan</a></h3>
+          <div class="price">$79 <s>$109</s></div>
+          <div class="swatches" data-swatches></div>
+          <div class="swatch-name"></div>
+        </article>
+        <article class="card">
+          <div class="card__img"><span class="pill">SAVE $25</span><svg viewBox="0 0 100 120"><use href="#bag"/></svg></div>
+          <h3><a href="#">Petal Shoulder Tote</a></h3>
+          <div class="price">$64 <s>$89</s></div>
+          <div class="swatches" data-swatches></div>
+          <div class="swatch-name"></div>
+        </article>
+        <article class="card">
+          <div class="card__img"><span class="tag-new">NEW</span><svg viewBox="0 0 100 120"><use href="#skirt"/></svg></div>
+          <h3><a href="#">Twirl Pleated Midi Skirt</a></h3>
+          <div class="price">$72</div>
+          <div class="swatches" data-swatches></div>
+          <div class="swatch-name"></div>
+        </article>
+      </div>
+      <div class="center"><a class="btn" href="#">Shop all Pink Picks</a></div>
+    </div>
+  </section>
+
+  <!-- Reviews -->
+  <section class="section reviews" id="reviews">
+    <div class="wrap">
+      <h2 class="h-section">Loved by <span class="accent">40,000+</span> Pinkaholics</h2>
+      <p class="score">★ 4.9 from 6,218 reviews</p>
+      <div class="reviews__row">
+        <article class="review">
+          <div class="stars" aria-label="5 stars">★★★★★</div>
+          <b>My new favourite dress, full stop</b>
+          <p>The gingham is even cuter in person and the fabric is soft and breathable. I got stopped three times at brunch.</p>
+          <div class="review__prod"><i style="background:var(--ballet)"></i>The Sunday Sundress, Cherry Gingham</div>
+        </article>
+        <article class="review">
+          <div class="stars" aria-label="5 stars">★★★★★</div>
+          <b>Cosy without the itch</b>
+          <p>I live in this cardigan. It's held its shape after a dozen washes and the shade is the perfect dusty pink.</p>
+          <div class="review__prod"><i style="background:var(--bubblegum)"></i>Marshmallow Knit Cardigan, Ballet</div>
+        </article>
+        <article class="review">
+          <div class="stars" aria-label="5 stars">★★★★★</div>
+          <b>Fits my whole life in it</b>
+          <p>Laptop, water bottle, snacks, spare cardigan. Sturdy straps and the raspberry colour goes with everything.</p>
+          <div class="review__prod"><i style="background:var(--raspberry)"></i>Petal Shoulder Tote, Raspberry</div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Categories -->
+  <section class="section">
+    <div class="wrap">
+      <h2 class="h-section">Shop by <span class="accent">category</span></h2>
+      <div class="cats">
+        <a class="cat" href="#"><div class="cat__frame" style="background:var(--ballet)"><svg viewBox="0 0 100 120" style="fill:url(#dots)"><use href="#dress"/></svg></div><span>Dresses</span></a>
+        <a class="cat" href="#"><div class="cat__frame" style="background:var(--butter)"><svg viewBox="0 0 100 120" style="fill:var(--bubblegum)"><use href="#tee"/></svg></div><span>Tops</span></a>
+        <a class="cat" href="#"><div class="cat__frame" style="background:var(--lilac)"><svg viewBox="0 0 100 120" style="fill:url(#leopard)"><use href="#bag"/></svg></div><span>Bags</span></a>
+        <a class="cat" href="#"><div class="cat__frame" style="background:var(--pistachio)"><svg viewBox="0 0 100 120" style="fill:var(--raspberry)"><use href="#heels"/></svg></div><span>Shoes</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Press -->
+  <div class="press" aria-label="As seen in">
+    <div class="wrap">
+      <span class="p1">The Pink Post</span>
+      <span class="p2">STYLE WEEKLY</span>
+      <span class="p3">Frock &amp; Co</span>
+      <span class="p4">blushmag</span>
+    </div>
+  </div>
+
+  <!-- Shade finder -->
+  <section class="section" id="finder">
+    <div class="wrap">
+      <h2 class="h-section">Which pink <span class="accent">are you?</span></h2>
+      <p class="lede">Soft and dreamy, bold and bright, or somewhere in between? Pick a mood and we'll do the rest.</p>
+      <div class="tabs" role="tablist" aria-label="Pink moods">
+        <button class="tab" role="tab" aria-selected="true" data-mood="0"><i style="background:var(--ballet)"></i>Ballet Soft</button>
+        <button class="tab" role="tab" aria-selected="false" data-mood="1"><i style="background:var(--bubblegum)"></i>Bubblegum Pop</button>
+        <button class="tab" role="tab" aria-selected="false" data-mood="2"><i style="background:var(--raspberry)"></i>Raspberry Bold</button>
+        <button class="tab" role="tab" aria-selected="false" data-mood="3"><i style="background-color:#fff;background-image:linear-gradient(90deg,rgba(242,92,143,.45) 50%,transparent 0),linear-gradient(rgba(242,92,143,.45) 50%,transparent 0);background-size:10px 10px"></i>Cherry Gingham</button>
+      </div>
+      <div class="finder" role="tabpanel">
+        <ul class="checks" id="moodList"></ul>
+        <div class="finder__art" id="moodArt">
+          <svg viewBox="0 0 100 120"><use href="#dress"/></svg>
+          <span class="sticker" id="moodSticker">Soft-girl approved</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why -->
+  <section class="section why">
+    <div class="wrap why__grid">
+      <div class="why__art" aria-hidden="true">
+        <div class="badge-round">100%<br>pink</div>
+        <svg viewBox="0 0 100 120" style="fill:var(--ballet)"><use href="#cardigan"/></svg>
+      </div>
+      <div>
+        <h2 class="h-section">Why <span class="accent">Pinkaholic?</span></h2>
+        <details open>
+          <summary>30-day free returns</summary>
+          <p>Try it on at home, twirl in the mirror, wear it to the shops (with tags on). If it's not love, send it back free within 30 days.</p>
+        </details>
+        <details>
+          <summary>Kind, feel-good fabrics</summary>
+          <p>Breathable cottons, recycled knits and linen blends, chosen to feel soft on day one and still look good on wear one hundred.</p>
+        </details>
+        <details>
+          <summary>Sizes 6 to 24</summary>
+          <p>Every style is cut and fitted on real bodies across our full size range, with model measurements on every product page.</p>
+        </details>
+        <details>
+          <summary>Free shipping over $100</summary>
+          <p>Australia-wide, tracked, and packed in pink, plastic-free mailers you'll want to keep.</p>
+        </details>
+        <div style="margin-top:28px"><a class="btn" href="#">Shop the edit</a></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="gingham" aria-hidden="true"></div>
+
+  <!-- UGC -->
+  <section class="section ugc">
+    <div class="wrap">
+      <h2 class="h-section">#Pinkaholic<span class="accent">IRL</span></h2>
+      <p class="lede" style="color:var(--ink)">Real wardrobes, real Saturdays. Tap to shop the look.</p>
+      <div class="ugc__row">
+        <div>
+          <div class="ugc__clip" style="background:linear-gradient(160deg,#FFEDB0,#F9D3DE)"><span class="play"><svg viewBox="0 0 10 10"><path d="M2 1l7 4-7 4z"/></svg></span><svg class="garment" viewBox="0 0 100 120" style="fill:url(#gingham)"><use href="#dress"/></svg><span class="handle">@jessinpink</span></div>
+          <div class="ugc__prod"><i style="background:var(--ballet)"></i><div><b>Sunday Sundress</b><s>$129</s> $89</div></div>
+        </div>
+        <div>
+          <div class="ugc__clip" style="background:linear-gradient(160deg,#D6E6C3,#FFEFEA)"><span class="play"><svg viewBox="0 0 10 10"><path d="M2 1l7 4-7 4z"/></svg></span><svg class="garment" viewBox="0 0 100 120" style="fill:var(--bubblegum)"><use href="#cardigan"/></svg><span class="handle">@milly.wears</span></div>
+          <div class="ugc__prod"><i style="background:var(--bubblegum)"></i><div><b>Marshmallow Knit</b><s>$109</s> $79</div></div>
+        </div>
+        <div>
+          <div class="ugc__clip" style="background:linear-gradient(160deg,#FFF8F3,#D9C8F2)"><span class="play"><svg viewBox="0 0 10 10"><path d="M2 1l7 4-7 4z"/></svg></span><svg class="garment" viewBox="0 0 100 120" style="fill:var(--raspberry)"><use href="#bag"/></svg><span class="handle">@hannahgoespink</span></div>
+          <div class="ugc__prod"><i style="background:var(--raspberry)"></i><div><b>Petal Tote</b><s>$89</s> $64</div></div>
+        </div>
+        <div>
+          <div class="ugc__clip" style="background:linear-gradient(160deg,#F9D3DE,#FFEDB0)"><span class="play"><svg viewBox="0 0 10 10"><path d="M2 1l7 4-7 4z"/></svg></span><svg class="garment" viewBox="0 0 100 120" style="fill:url(#dots)"><use href="#skirt"/></svg><span class="handle">@soph.styles</span></div>
+          <div class="ugc__prod"><i style="background:var(--bubblegum)"></i><div><b>Twirl Midi Skirt</b>$72</div></div>
+        </div>
+        <div>
+          <div class="ugc__clip" style="background:linear-gradient(160deg,#FFEFEA,#D6E6C3)"><span class="play"><svg viewBox="0 0 10 10"><path d="M2 1l7 4-7 4z"/></svg></span><svg class="garment" viewBox="0 0 100 120" style="fill:var(--ballet)"><use href="#heels"/></svg><span class="handle">@pinkpaige</span></div>
+          <div class="ugc__prod"><i style="background:var(--ballet)"></i><div><b>Blossom Mules</b>$95</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Real wardrobes -->
+  <section class="section real">
+    <div class="wrap real__grid">
+      <div>
+        <h2 class="h-section">Made for <span class="accent">real wardrobes</span></h2>
+        <blockquote>“Pink was never a phase for us. It's how we feel when we get dressed on a good day, so we make clothes that give you more good days.”</blockquote>
+        <cite>The Pinkaholic team, Melbourne</cite>
+      </div>
+      <div class="real__hanger" aria-hidden="true">
+        <svg viewBox="0 0 200 200">
+          <path d="M100 30a10 10 0 1 1 10 10c-6 0-10 4-10 10v6" fill="none" stroke="#4A1230" stroke-width="3" stroke-linecap="round"/>
+          <path d="M100 56L24 100h152z" fill="none" stroke="#4A1230" stroke-width="3" stroke-linejoin="round"/>
+          <g transform="translate(46 92) scale(1.08)"><svg viewBox="0 0 100 120" width="100" height="120" style="fill:url(#gingham)"><use href="#dress"/></svg></g>
+        </svg>
+        <span class="sticker t1">Designed in Melbourne</span>
+        <span class="sticker t2">Sizes 6–24</span>
+        <span class="sticker t3">Made to last</span>
+        <span class="sticker t4">Pink, always</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Newsletter -->
+  <section class="section" style="padding-bottom:0">
+    <div class="wrap">
+      <div class="news">
+        <h2 class="h-section">Get 15% off your <span style="text-decoration:underline wavy var(--milk) 2px;text-underline-offset:8px">first pink</span></h2>
+        <p>Join the Pinkaholic list for early access to drops, Pink Week deals and the occasional outfit idea.</p>
+        <form onsubmit="event.preventDefault(); this.querySelector('button').textContent='You’re in!';">
+          <label for="email" style="position:absolute;left:-9999px">Email address</label>
+          <input id="email" type="email" placeholder="Your email address" required>
+          <button class="btn" type="submit">Sign me up</button>
+        </form>
+        <small>No spam, just pink. Unsubscribe anytime.</small>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div>
+        <a class="wordmark" href="#">Pink<span>a</span>holic</a>
+        <p>Feel-good fashion in every shade of pink. Designed in Melbourne, shipped Australia-wide.</p>
+      </div>
+      <div><h4>Shop</h4><ul><li><a href="#">New In</a></li><li><a href="#">Dresses</a></li><li><a href="#">Knitwear</a></li><li><a href="#">Bags &amp; Shoes</a></li></ul></div>
+      <div><h4>Help</h4><ul><li><a href="#">Shipping</a></li><li><a href="#">Returns</a></li><li><a href="#">Size guide</a></li><li><a href="#">Contact us</a></li></ul></div>
+      <div><h4>Pinkaholic</h4><ul><li><a href="#">Our story</a></li><li><a href="#">Reviews</a></li><li><a href="#">Lookbook</a></li><li><a href="#">Instagram</a></li></ul></div>
+    </div>
+    <div class="foot__base"><span>© 2026 Pinkaholic. Style mockup.</span><span>Afterpay · Zip · Visa · Mastercard · PayPal</span></div>
+  </div>
+</footer>
+
+<script>
+  // Named shades, as Crumble names its colourways
+  const shades = [
+    { name: 'Ballet', fill: '#F9D3DE' },
+    { name: 'Bubblegum', fill: '#FF8FB8' },
+    { name: 'Raspberry', fill: '#D63A6E' },
+    { name: 'Cherry Gingham', fill: 'url(#gingham)', bg: 'conic-gradient(#F9A5C1 25%, #FFF8F3 0 50%, #F9A5C1 0 75%, #FFF8F3 0) 0 0 / 8px 8px' },
+    { name: 'Polka Pop', fill: 'url(#dots)', bg: 'radial-gradient(#FFF8F3 30%, #FF8FB8 32%) 0 0 / 8px 8px' }
+  ];
+  const startShade = [3, 0, 2, 1];
+
+  document.querySelectorAll('.card').forEach((card, i) => {
+    const holder = card.querySelector('[data-swatches]');
+    const label = card.querySelector('.swatch-name');
+    const select = (idx) => {
+      card.style.setProperty('--g', shades[idx].fill);
+      label.textContent = shades[idx].name;
+      holder.querySelectorAll('.swatch').forEach((b, j) => b.setAttribute('aria-pressed', j === idx));
+    };
+    shades.forEach((s, idx) => {
+      const b = document.createElement('button');
+      b.className = 'swatch';
+      b.style.background = s.bg || s.fill;
+      b.setAttribute('aria-label', s.name);
+      b.addEventListener('click', () => select(idx));
+      b.addEventListener('mouseenter', () => label.textContent = s.name);
+      b.addEventListener('mouseleave', () => label.textContent = shades[[...holder.children].findIndex(x => x.getAttribute('aria-pressed') === 'true')].name);
+      holder.appendChild(b);
+    });
+    select(startShade[i] ?? 0);
+  });
+
+  // "Which pink are you?" tabs
+  const moods = [
+    { bg: '#F9D3DE', fill: '#FFF8F3', sticker: 'Soft-girl approved', items: [
+      ['Dreamy, washed-out pinks', 'Powder and blush tones that pair with cream and denim'],
+      ['Floaty fabrics', 'Cotton voile and soft linen that move when you do'],
+      ['Easy day-to-night', 'Add a cardigan and you are dinner-ready'] ] },
+    { bg: '#FF8FB8', fill: '#F9D3DE', sticker: 'Main-character energy', items: [
+      ['Bright, happy pinks', 'Saturated shades that photograph beautifully'],
+      ['Playful shapes', 'Puff sleeves, tiers and pleats with a bit of bounce'],
+      ['Weekend-ready', 'Brunch, markets, birthday drinks, sorted'] ] },
+    { bg: '#D63A6E', fill: '#FF8FB8', sticker: 'Turns heads, politely', items: [
+      ['Deep, confident pinks', 'Raspberry and magenta that work in every season'],
+      ['Sharper tailoring', 'Clean lines that go from office to evening'],
+      ['Statement pieces', 'One bold item carries the whole outfit'] ] },
+    { bg: '#FFEDB0', fill: 'url(#gingham)', sticker: 'Picnic-perfect', items: [
+      ['Retro prints', 'Gingham, polka dots and florals in pink-on-cream'],
+      ['Breathable cottons', 'Cool enough for a 35-degree Melbourne day'],
+      ['Mix-and-match sets', 'Wear together or split across your wardrobe'] ] }
+  ];
+  const tick = '<svg viewBox="0 0 28 28"><circle cx="14" cy="14" r="12"/><path d="M9 14l3.5 3.5L19 11" fill="none"/></svg>';
+  const list = document.getElementById('moodList');
+  const art = document.getElementById('moodArt');
+  const setMood = (m) => {
+    const mood = moods[m];
+    list.innerHTML = mood.items.map(([t, s]) => `<li>${tick}<div><b>${t}</b><span>${s}</span></div></li>`).join('');
+    art.style.background = mood.bg;
+    art.querySelector('svg').style.fill = mood.fill;
+    document.getElementById('moodSticker').textContent = mood.sticker;
+    document.querySelectorAll('.tab').forEach((t) => t.setAttribute('aria-selected', t.dataset.mood == m));
+  };
+  document.querySelectorAll('.tab').forEach((t) => t.addEventListener('click', () => setMood(+t.dataset.mood)));
+  setMood(0);
+</script>
+</body>
+</html>
