@@ -1,0 +1,19 @@
+# Pinkaholic checkout Worker. Deploy from this folder with: npx wrangler deploy
+name = "pinkaholic-checkout"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+
+[vars]
+SITE_URL = "https://pinkaholic.com.au"
+ALLOWED_ORIGINS = "https://pinkaholic.com.au,https://www.pinkaholic.com.au,http://localhost:8765"
+
+# Logos and order records. Create it first: npx wrangler r2 bucket create pinkaholic-orders
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "pinkaholic-orders"
+
+# Secrets (never commit these). Set each with: npx wrangler secret put NAME
+#   STRIPE_SECRET_KEY      sk_test_... while testing, sk_live_... when live
+#   STRIPE_WEBHOOK_SECRET  whsec_... from the Stripe webhook endpoint
+#   LINK_SECRET            any long random string (signs logo links)
+#   ORDER_WEBHOOK_URL      optional: Zapier / Make / Google Apps Script URL that receives each order

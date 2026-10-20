@@ -74,10 +74,8 @@
     var mottle = valueNoise(S, 18, rand);          // soft dye variation
     var clumps = valueNoise(S, Math.round(S / 6), rand);   // fibre clumps a few pixels across
 
-    // Seam: the classic tennis-ball curve, front-facing parts only.
-    var seam = canvas("seam" + S, S), groove = canvas("groove" + S, S);
-    var sctx = seam.getContext("2d"), gctx = groove.getContext("2d");
-    sctx.clearRect(0, 0, S, S); gctx.clearRect(0, 0, S, S);
+    // Seam: the classic tennis-ball curve, front-facing parts only, drawn as layers:
+    // a soft groove, a cast shadow below-right, the rubber line, and a thin highlight above-left.
     var psi = Math.PI / 4 + TILT, cp = Math.cos(psi), sp = Math.sin(psi);
     var pts = [];
     for (var t = 0; t <= Math.PI * 2 + 0.001; t += Math.PI / 600) {
@@ -86,30 +84,36 @@
       var pz = 2 * Math.sqrt(SEAM_A * SEAM_B) * Math.sin(2 * t);
       pts.push([px * cp - py * sp, px * sp + py * cp, pz]);
     }
-    [[gctx, 0.085, "rgba(0,0,0,1)"], [sctx, 0.042, "rgba(255,255,255,1)"]].forEach(function (s) {
-      var ctx = s[0];
+    function seamLayer(key, width, ox, oy, blur) {
+      var c = canvas(key + S, S), ctx = c.getContext("2d");
+      ctx.clearRect(0, 0, S, S);
       ctx.lineCap = "round";
-      ctx.strokeStyle = s[2];
+      ctx.strokeStyle = "#000";
       for (var j = 1; j < pts.length; j++) {
         var p = pts[j - 1], q = pts[j];
         if (p[2] <= 0 || q[2] <= 0) continue;
-        ctx.lineWidth = R * s[1] * Math.sqrt((p[2] + q[2]) / 2);
+        ctx.lineWidth = R * width * Math.sqrt((p[2] + q[2]) / 2);
         ctx.beginPath();
-        ctx.moveTo(cx + p[0] * R, cy + p[1] * R);
-        ctx.lineTo(cx + q[0] * R, cy + q[1] * R);
+        ctx.moveTo(cx + (p[0] + ox) * R, cy + (p[1] + oy) * R);
+        ctx.lineTo(cx + (q[0] + ox) * R, cy + (q[1] + oy) * R);
         ctx.stroke();
       }
-    });
-    var seamA = sctx.getImageData(0, 0, S, S).data;
-    var soft = canvas("grooveSoft" + S, S), bctx = soft.getContext("2d");
-    bctx.clearRect(0, 0, S, S);
-    bctx.filter = "blur(" + Math.max(1, S / 260) + "px)";
-    bctx.drawImage(groove, 0, 0);
-    bctx.filter = "none";
-    var grooveA = bctx.getImageData(0, 0, S, S).data;
+      if (!blur) return ctx.getImageData(0, 0, S, S).data;
+      var b = canvas(key + "Blur" + S, S), bctx = b.getContext("2d");
+      bctx.clearRect(0, 0, S, S);
+      bctx.filter = "blur(" + Math.max(0.6, S * blur) + "px)";
+      bctx.drawImage(c, 0, 0);
+      bctx.filter = "none";
+      return bctx.getImageData(0, 0, S, S).data;
+    }
+    var grooveA = seamLayer("groove", 0.09, 0, 0, 1 / 240);
+    var castA = seamLayer("cast", 0.05, 0.011, 0.015, 1 / 300);
+    var seamA = seamLayer("seam", 0.042, 0, 0, 1 / 1400);
+    var hiA = seamLayer("seamHi", 0.014, -0.007, -0.009, 1 / 900);
 
     // Per-pixel sphere data: coverage, shading, sheen, base colour, texture coordinates.
     var alpha = new Float32Array(n), shade = new Float32Array(n), sheen = new Float32Array(n);
+    var shadeG = new Float32Array(n), shadeB = new Float32Array(n);
     var base = new Float32Array(n * 3), tu = new Float32Array(n), tv = new Float32Array(n), spec = new Float32Array(n);
     var L = [-0.42, -0.58, 0.7], ll = Math.hypot(L[0], L[1], L[2]);
     L = [L[0] / ll, L[1] / ll, L[2] / ll];
@@ -126,18 +130,26 @@
         var nz = r < 1 ? Math.sqrt(1 - r * r) : 0;
         var nx = r < 1 ? dx : dx / r, ny = r < 1 ? dy : dy / r;
         var diff = nx * L[0] + ny * L[1] + nz * L[2];
-        shade[k] = 0.5 + 0.62 * Math.max(0, diff) - 0.08 * Math.max(0, dy) * (1 - nz);
-        sheen[k] = Math.pow(1 - nz, 2.6) * 0.32 * (0.6 + 0.8 * grain[k]);
+        // Wrap lighting gives felt its soft shadow edge; shadows lean deeper rose, not grey.
+        var wrap = Math.max(0, (diff + 0.5) / 1.5);
+        var sv0 = (0.3 + 0.86 * wrap) * (1 - 0.16 * Math.pow(Math.max(0, dy), 2));
+        shade[k] = sv0;
+        shadeG[k] = Math.pow(sv0, 1.32);
+        shadeB[k] = Math.pow(sv0, 1.12);
+        // Fibres catch light along the lit rim.
+        sheen[k] = Math.pow(1 - nz, 2.4) * (0.12 + 0.3 * Math.max(0, -nx * 0.6 - ny * 0.8)) * (0.6 + 0.8 * grain[k]);
         spec[k] = Math.pow(Math.max(0, nx * H[0] + ny * H[1] + nz * H[2]), 24);
 
         var fv = 0.9 + 0.11 * grain[k] + 0.08 * (clumps[k] - 0.5) + 0.05 * (mottle[k] - 0.5);
         var cr = FELT[0] * fv, cg = FELT[1] * fv, cb = FELT[2] * fv;
-        var gr = grooveA[k * 4 + 3] / 255 * 0.22;
-        cr *= 1 - gr; cg *= 1 - gr; cb *= 1 - gr;
+        var gr = grooveA[k * 4 + 3] / 255 * 0.14 + castA[k * 4 + 3] / 255 * 0.3;
+        cr *= 1 - gr; cg *= 1 - gr * 1.15; cb *= 1 - gr;
         var m = seamA[k * 4 + 3] / 255;
         if (m > 0) {
-          var sv = 0.94 + 0.08 * grain[k];
+          var sv = 0.95 + 0.05 * grain[k];
           cr = cr * (1 - m) + SEAM[0] * sv * m; cg = cg * (1 - m) + SEAM[1] * sv * m; cb = cb * (1 - m) + SEAM[2] * sv * m;
+          var hi = hiA[k * 4 + 3] / 255 * m * 0.5;
+          cr += (255 - cr) * hi; cg += (255 - cg) * hi; cb += (255 - cb) * hi;
         }
         base[k * 3] = cr; base[k * 3 + 1] = cg; base[k * 3 + 2] = cb;
 
@@ -151,7 +163,29 @@
         }
       }
     }
-    cache[S] = { R: R, cx: cx, cy: cy, alpha: alpha, shade: shade, sheen: sheen, spec: spec, base: base, tu: tu, tv: tv, grain: grain };
+    // Loose fibres: faint short strands over the surface, and a fuzzy halo past the outline.
+    var strands = [], fr = rng(31), unit = S / 720;
+    function feltAt(px2, py2, lighten) {
+      var kk = (Math.max(0, Math.min(S - 1, py2 | 0))) * S + Math.max(0, Math.min(S - 1, px2 | 0));
+      var l = lighten || 1;
+      return "rgb(" + Math.min(255, FELT[0] * shade[kk] * l | 0) + "," + Math.min(255, FELT[1] * shadeG[kk] * l | 0) + "," + Math.min(255, FELT[2] * shadeB[kk] * l | 0) + ")";
+    }
+    var count = Math.round(S * S / 200);
+    for (i = 0; i < count; i++) {
+      var rr = Math.sqrt(fr()) * 0.97, aa = fr() * Math.PI * 2;
+      var sx = cx + Math.cos(aa) * rr * R, sy = cy + Math.sin(aa) * rr * R;
+      var len = R * (0.008 + fr() * 0.018), dir = fr() * Math.PI * 2;
+      strands.push([sx, sy, sx + Math.cos(dir) * len, sy + Math.sin(dir) * len, feltAt(sx, sy, 0.85 + fr() * 0.4), 0.1 + fr() * 0.16, (0.5 + fr() * 0.6) * unit]);
+    }
+    var halo = Math.round(S * 2.2);
+    for (i = 0; i < halo; i++) {
+      var ang = fr() * Math.PI * 2, r0 = 0.965 + fr() * 0.035;
+      var hx = cx + Math.cos(ang) * r0 * R, hy = cy + Math.sin(ang) * r0 * R;
+      var dir2 = ang + (fr() - 0.5) * 1.6, len2 = R * (0.012 + fr() * 0.03);
+      var lit = Math.max(0, -Math.cos(ang) * 0.6 - Math.sin(ang) * 0.8);
+      strands.push([hx, hy, hx + Math.cos(dir2) * len2, hy + Math.sin(dir2) * len2, feltAt(hx, hy, 1 + lit * 0.35), 0.18 + fr() * 0.22, (0.5 + fr() * 0.5) * unit]);
+    }
+    cache[S] = { R: R, cx: cx, cy: cy, alpha: alpha, shade: shade, shadeG: shadeG, shadeB: shadeB, sheen: sheen, spec: spec, base: base, tu: tu, tv: tv, grain: grain, strands: strands };
     return cache[S];
   }
 
@@ -247,7 +281,7 @@
         }
       }
       // Felt and seam, lit.
-      r = r * sh; gg = gg * sh; b = b * sh;
+      r = r * sh; gg = gg * g.shadeG[k]; b = b * g.shadeB[k];
       r += (SHEEN[0] - r) * sn; gg += (SHEEN[1] - gg) * sn; b += (SHEEN[2] - b) * sn;
       // Ink sits in the felt: fibres break it up a little.
       if (ia > 0) {
@@ -277,7 +311,26 @@
     ctx.fillStyle = sg;
     ctx.beginPath(); ctx.arc(g.cx, sy, g.R * 0.95, 0, Math.PI * 2); ctx.fill();
     ctx.restore();
+    // Tight contact shadow where the ball meets the surface.
+    var cg2 = ctx.createRadialGradient(g.cx, g.cy + g.R * 0.99, 0, g.cx, g.cy + g.R * 0.99, g.R * 0.5);
+    cg2.addColorStop(0, "rgba(70, 16, 38, 0.42)");
+    cg2.addColorStop(1, "rgba(70, 16, 38, 0)");
+    ctx.save();
+    ctx.translate(g.cx, g.cy + g.R * 0.99); ctx.scale(1, 0.12); ctx.translate(-g.cx, -(g.cy + g.R * 0.99));
+    ctx.fillStyle = cg2;
+    ctx.beginPath(); ctx.arc(g.cx, g.cy + g.R * 0.99, g.R * 0.5, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
     ctx.drawImage(out, 0, 0);
+
+    ctx.lineCap = "round";
+    for (var f = 0; f < g.strands.length; f++) {
+      var st = g.strands[f];
+      ctx.globalAlpha = st[5];
+      ctx.strokeStyle = st[4];
+      ctx.lineWidth = st[6];
+      ctx.beginPath(); ctx.moveTo(st[0], st[1]); ctx.lineTo(st[2], st[3]); ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
   }
 
   // Load the print fonts before the first render so text isn't drawn in a fallback face.

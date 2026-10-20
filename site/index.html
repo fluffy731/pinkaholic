@@ -28,7 +28,14 @@
       <a href="#packs">Sets</a>
       <a href="#faq">Questions</a>
     </nav>
-    <a class="btn btn--small" href="#design">Personalise</a>
+    <div class="top__actions">
+      <a class="btn btn--small top__cta" href="#design">Personalise</a>
+      <button class="bag-btn" type="button" id="bag-open" aria-haspopup="dialog" aria-controls="bag">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l-1.2 12H6.2L5 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+        <span class="bag-btn__label">Bag</span>
+        <span class="bag-btn__count" id="bag-count" aria-label="0 items in your bag">0</span>
+      </button>
+    </div>
   </header>
 
   <main id="top">
@@ -127,13 +134,11 @@
           </fieldset>
 
           <div class="order">
-            <p class="order__total"><span>Total</span> <strong id="total" aria-live="polite"></strong></p>
+            <p class="order__total"><span>Price</span> <strong id="total" aria-live="polite"></strong></p>
             <p class="order__ship" id="ship-note"></p>
-            <button class="btn btn--wide" type="submit" id="order-btn">Order now</button>
+            <p class="order__editing" id="editing" hidden>Editing a design in your bag. <button type="button" class="link" id="edit-cancel">Cancel</button></p>
+            <button class="btn btn--wide" type="submit" id="order-btn">Add to bag</button>
             <p class="order__eta" id="eta"></p>
-            <p class="order__soon" id="soon" hidden>
-              Online checkout opens soon. To order now, <a id="email-order" href="#">email us your design</a><span id="soon-logo" hidden> and attach your logo file</span>, and we'll reply with a payment link.
-            </p>
           </div>
         </form>
       </div>
@@ -253,8 +258,41 @@
     <p class="foot__small">© <span data-year>2026</span> Pinkaholic. Prices in AUD and include GST.</p>
   </footer>
 
+  <div class="bag" id="bag" role="dialog" aria-modal="true" aria-labelledby="bag-title" hidden>
+    <div class="bag__scrim" data-bag-close></div>
+    <aside class="bag__panel">
+      <header class="bag__head">
+        <button class="bag__close" type="button" data-bag-close aria-label="Close your bag">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+        <h2 id="bag-title">Your bag</h2>
+        <span class="bag__n" id="bag-n">0</span>
+      </header>
+      <div class="bag__body">
+        <ul class="bag__items" id="bag-items"></ul>
+        <div class="bag__empty" id="bag-empty">
+          <p class="bag__empty-title">Your bag is empty</p>
+          <p>Design a pink ball with your words or logo, and it'll wait for you here.</p>
+          <a class="btn" href="#design" data-bag-close>Design a ball</a>
+        </div>
+      </div>
+      <footer class="bag__foot" id="bag-foot" hidden>
+        <p class="bag__line"><span>Subtotal</span><strong id="bag-subtotal"></strong></p>
+        <p class="bag__line bag__line--small"><span>Tracked shipping, AU &amp; NZ</span><span>Complimentary</span></p>
+        <p class="bag__eta" id="bag-eta"></p>
+        <button class="btn btn--wide" type="button" id="bag-checkout">Checkout</button>
+        <p class="bag__error" id="bag-error" role="alert" hidden></p>
+        <div class="bag__fallback" id="bag-fallback" hidden>
+          <p>Online checkout opens soon. To order now, <a id="bag-email" href="#">email us your bag</a><span id="bag-email-logo" hidden> and attach your logo files</span>. We'll reply with a payment link.</p>
+        </div>
+        <p class="bag__secure">Prices in AUD, including GST. Secure payment by Stripe.</p>
+      </footer>
+    </aside>
+  </div>
+
   <script src="config.js"></script>
   <script src="ball.js"></script>
+  <script src="cart.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

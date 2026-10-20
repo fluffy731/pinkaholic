@@ -8,8 +8,6 @@
   var STORE_KEY = "pinkaholic-design";
   var ALLOWED = /^[\p{L}\p{N} .,!?'’&+\-#@:()\/♥]*$/u;
   var MAX_LOGO_BYTES = 5 * 1024 * 1024;
-  var INK_NAMES = { wine: "wine", black: "black", white: "white", gold: "gold foil" };
-  var FONT_NAMES = { script: "script", serif: "serif", caps: "capitals", modern: "modern" };
 
   function money(n) {
     return new Intl.NumberFormat("en-AU", { style: "currency", currency: cfg.currency, minimumFractionDigits: n % 1 ? 2 : 0 }).format(n);
@@ -193,40 +191,27 @@
   });
   $("#logo-white").addEventListener("change", prepare);
 
-  // ---------- Ordering ----------
+  // ---------- Adding to the bag ----------
   function problem(d) {
     if (!d.line1 && !d.line2 && !d.hasLogo) return "Add some words or a logo.";
     if (!ALLOWED.test(d.line1) || !ALLOWED.test(d.line2)) return "Please use letters, numbers and simple punctuation only.";
     return "";
   }
 
-  // Compact, URL-safe design code for Stripe's client_reference_id (letters, numbers, - and _ only).
-  function designCode(d) {
-    var raw = ["PK2", d.line1, d.line2, d.font, d.ink, d.pack, d.hasLogo ? d.layout + ":" + d.logoInk : ""].join("|");
-    return btoa(unescape(encodeURIComponent(raw))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  var editing = null;   // { id, qty } of the bag design being edited
+  function setEditing(e) {
+    editing = e;
+    $("#editing").hidden = !e;
+    $("#order-btn").textContent = e ? "Update bag" : "Add to bag";
   }
+  $("#edit-cancel").addEventListener("click", function () { setEditing(null); });
 
-  function emailLink(d) {
-    var p = pack();
-    var body = [
-      "Hi Pinkaholic, I'd like to order:",
-      "",
-      "Set: " + p.name + " (" + p.qty + (p.qty > 1 ? " balls, " : " ball, ") + money(p.price) + ")",
-      "Line 1: " + (d.line1 || "-"),
-      "Line 2: " + (d.line2 || "-"),
-      "Lettering: " + FONT_NAMES[d.font],
-      "Ink: " + INK_NAMES[d.ink],
-      "Logo: " + (d.hasLogo ? "yes, " + d.layout + ", printed in " + (d.logoInk === "ink" ? "the ink colour" : "its original colours") + " (file attached)" : "no"),
-      "",
-      "Deliver to (name, address, phone):",
-      ""
-    ].join("\n");
-    return "mailto:" + cfg.contactEmail + "?subject=" + encodeURIComponent("Pinkaholic order: " + (d.line1 || "logo ball")) + "&body=" + encodeURIComponent(body);
+  function thumbnail(d) {
+    var c = document.createElement("canvas");
+    c.width = c.height = 220;
+    Ball.render(c, ballDesign(d));
+    return c.toDataURL("image/webp", 0.86);   // browsers without WebP export fall back to PNG
   }
-
-  var btn = $("#order-btn");
-  var live = cfg.checkout.provider === "stripe";
-  if (!live) btn.textContent = "Request this design";
 
   form.addEventListener("input", render);
   form.addEventListener("change", render);
@@ -236,17 +221,42 @@
     var err = problem(d);
     line1.setCustomValidity(err);
     if (err) { line1.reportValidity(); return; }
-    var p = pack();
-    if (live && p.link) {
-      var sep = p.link.indexOf("?") === -1 ? "?" : "&";
-      window.location.href = p.link + sep + "client_reference_id=" + designCode(d);
-      return;
-    }
-    $("#email-order").href = emailLink(d);
-    $("#soon-logo").hidden = !d.hasLogo;
-    $("#soon").hidden = false;
+    if (d.layout === "only") { d.line1 = ""; d.line2 = ""; }   // logo-only designs print no words
+    var item = {
+      set: d.pack, qty: editing && window.PinkaholicCart.has(editing.id) ? editing.qty : 1,
+      line1: d.line1, line2: d.line2, font: d.font, ink: d.ink,
+      layout: d.layout, logoSize: d.logoSize, logoInk: d.logoInk,
+      logo: logoPrint ? logoPrint.toDataURL("image/png") : null, logoName: logoPrint ? logoName : "",
+      thumb: thumbnail(d)
+    };
+    window.PinkaholicCart.save(item, editing && editing.id);
+    setEditing(null);
   });
   line1.addEventListener("input", function () { line1.setCustomValidity(""); });
+
+  // Load a bag design back into the designer to change it.
+  window.PinkaholicDesigner = {
+    load: function (it) {
+      line1.value = it.line1 || ""; line2.value = it.line2 || "";
+      [["font", it.font], ["ink", it.ink], ["pack", it.set], ["layout", it.layout === "none" ? "above" : it.layout]].forEach(function (p) {
+        var r = form.querySelector('input[name="' + p[0] + '"][value="' + p[1] + '"]');
+        if (r) r.checked = true;
+      });
+      $("#logo-size").value = it.logoSize || 1;
+      $("#logo-ink").checked = it.logoInk !== "original";
+      $("#logo-white").checked = false;   // the saved logo is already cleaned up
+      setEditing({ id: it.id, qty: it.qty });
+      if (it.logo) {
+        var img = new Image();
+        img.onload = function () { logoSource = img; logoName = it.logoName || "Your logo"; prepare(); };
+        img.src = it.logo;
+      } else {
+        logoSource = null; logoPrint = null; logoName = ""; fileInput.value = "";
+        prepare();
+      }
+      $("#design").scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   // Set buttons pick a set; occasion buttons load a sample design.
   document.addEventListener("click", function (e) {

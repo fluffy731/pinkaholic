@@ -2,7 +2,7 @@
 
 Personalised pink tennis balls, delivered across Australia and New Zealand.
 
-- Live site: https://fluffy731.github.io/pinkaholic/ (moving to https://pinkaholic.com.au, see [docs/domain-setup.md](docs/domain-setup.md))
+- Live site: https://pinkaholic.com.au (GitHub Pages; DNS notes in [docs/domain-setup.md](docs/domain-setup.md))
 - Every push to `main` that changes `site/` deploys to GitHub Pages.
 
 ## Where things are
@@ -10,25 +10,57 @@ Personalised pink tennis balls, delivered across Australia and New Zealand.
 | Path | What it is |
 |---|---|
 | `site/` | The website. Plain HTML, CSS and JS, with no build step |
-| `site/config.js` | Prices, packs, shipping, delivery estimate and checkout links. Edit this to change the shop |
-| `brand/logo.svg`, `brand/logo-white.svg` | The logo (Great Vibes script with a heart for the dot on the last i) |
-| `brand/logo-alt-*.svg`, `brand/drafts/` | Other logo fonts that were tried |
-| `brand/make_logo.py` | Rebuilds the logo SVGs from a font file (needs `pip install fonttools`) |
+| `site/config.js` | Prices, sets, delivery estimate and checkout settings. Edit this to change the shop |
+| `site/ball.js` | Draws the realistic pink ball, with the customer's text and logo wrapped onto it |
+| `site/cart.js` | The bag: saved designs, the slide-out drawer and checkout |
+| `worker/` | Checkout Worker (Cloudflare): creates Stripe Checkout sessions and hands paid orders to the factory |
+| `brand/` | Logos and the scripts that build them (`make_logo*.py`, needs `pip install fonttools`) |
 | `design/crumble-reference/` | The crumble.co-inspired style guide and first mockup |
-| `docs/research/` | Market, pricing and ecommerce research |
-| `docs/domain-setup.md` | How to connect the GoDaddy domain |
-| `tools/decode.html` | Turns a Stripe `client_reference_id` back into the customer's ball text |
+| `docs/research/` | Market, pricing, supplier and ecommerce research |
+| `docs/plans/` | Plans for each piece of work |
+| `tools/decode.html` | Only for the old Payment Link codes; the cart doesn't need it |
 
-## Turning on checkout
+## Checkout
 
-1. In Stripe, create one Payment Link per pack (see `docs/research/ecommerce-routes.md`), with shipping address collection on and the success URL set to `https://pinkaholic.com.au/thanks.html`.
-2. Paste each link into that pack's `link` in `site/config.js`, and set `checkout: { provider: "stripe" }`.
-3. Push to `main`. Each order's `client_reference_id` holds the customer's text, which `tools/decode.html` reads.
+Until the Worker is live, the bag's Checkout button builds an email order. To take card payments:
+
+1. **Cloudflare (free account):**
+   - From `worker/`, run `npx wrangler login`, then `npx wrangler r2 bucket create pinkaholic-orders`, then `npx wrangler deploy`.
+   - Note the Worker's address, e.g. `https://pinkaholic-checkout.<you>.workers.dev`.
+2. **Secrets (never commit them):** set each one with `npx wrangler secret put NAME`:
+   - `STRIPE_SECRET_KEY` (use `sk_test_…` first);
+   - `LINK_SECRET` (any long random string);
+   - optionally `ORDER_WEBHOOK_URL` (Zapier, Make or Google Apps Script) to receive each order.
+3. **Stripe webhook:**
+   - In Stripe → Developers → Webhooks, add `https://<worker>/webhook` for the `checkout.session.completed` event.
+   - Copy its signing secret into `STRIPE_WEBHOOK_SECRET`.
+4. **Point the site at the Worker:** in `site/config.js`, set `checkout: { provider: "worker", endpoint: "https://<worker>" }` and push.
+5. **Test, then go live:** pay with Stripe's test card 4242 4242 4242 4242 and check the order arrives. Then switch to live keys.
+6. **Clean-up rule:** in R2, add a lifecycle rule to delete `logos/` after 60 days, so logos from abandoned checkouts don't pile up.
+
+Each paid order is saved as `orders/<ref>.json` in R2 and posted to `ORDER_WEBHOOK_URL`. The order record holds:
+- customer and shipping details;
+- each design's text, lettering, ink and set;
+- a signed link to the logo.
+
+## Tests
+
+```bash
+node --test worker/test/*.test.js
+```
 
 ## Preview locally
 
 ```bash
-python -m http.server 8765 --directory site
+python -m http.server 8765
 ```
 
-Then open http://localhost:8765.
+Then open http://localhost:8765/site/.
+
+To try the whole checkout without Stripe keys, also run the Worker with a fake Stripe:
+
+```bash
+node worker/dev-server.mjs
+```
+
+Then, in the browser console, set `PINKAHOLIC.checkout = { provider: "worker", endpoint: "http://localhost:8787" }`.

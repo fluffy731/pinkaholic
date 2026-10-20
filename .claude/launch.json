@@ -6,6 +6,12 @@
       "runtimeExecutable": "python",
       "runtimeArgs": ["-m", "http.server", "8765", "--directory", "F:/Development/pinkaholic"],
       "port": 8765
+    },
+    {
+      "name": "checkout-worker",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["F:/Development/pinkaholic/worker/dev-server.mjs"],
+      "port": 8787
     }
   ]
 }

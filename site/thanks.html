@@ -20,17 +20,25 @@
     <a class="btn" href="./">Back to Pinkaholic</a>
   </main>
   <script>
-    // Show the design saved by the designer so the customer can check what will be printed.
+    // After a paid Stripe checkout: show what was ordered, then empty the bag.
     (function () {
       try {
-        var d = JSON.parse(localStorage.getItem("pinkaholic-design") || "null");
-        if (!d || !d.line1) return;
+        var params = new URLSearchParams(location.search);
+        var bag = JSON.parse(localStorage.getItem("pinkaholic-bag") || "[]");
         var p = document.getElementById("your-text");
-        p.textContent = "Your ball will say: “" + d.line1 + (d.line2 ? " / " + d.line2 : "") + "” in " + d.font + " style, " + d.ink + " ink. Spotted a typo? Reply to your receipt email within 24 hours and we'll fix it before printing.";
-        p.className = "order__soon";
-        p.style.margin = "0 auto 28px";
-        p.style.maxWidth = "34em";
-        p.hidden = false;
+        if (bag.length) {
+          var words = bag.map(function (it) {
+            return [it.line1, it.line2].filter(Boolean).join(" / ") || "your logo";
+          });
+          p.textContent = (params.get("order") ? "Order " + params.get("order") + ": " : "") +
+            words.map(function (w) { return "“" + w + "”"; }).join(", ") +
+            ". Spotted a typo? Reply to your receipt email within 24 hours and we'll fix it before printing.";
+          p.className = "order__soon";
+          p.style.margin = "0 auto 28px";
+          p.style.maxWidth = "34em";
+          p.hidden = false;
+        }
+        if (params.get("session_id")) localStorage.removeItem("pinkaholic-bag");
       } catch (e) {}
     })();
   </script>
