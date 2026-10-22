@@ -14,7 +14,8 @@ Personalised pink tennis balls, delivered across Australia and New Zealand.
 | `site/ball.js` | Draws the realistic pink ball, with the customer's text and logo wrapped onto it |
 | `site/cart.js` | The bag: saved designs, the slide-out drawer and checkout |
 | `worker/` | Checkout Worker (Cloudflare): creates Stripe Checkout sessions and hands paid orders to the factory |
-| `brand/` | Logos and the scripts that build them (`make_logo*.py`, needs `pip install fonttools`) |
+| `brand/sticker/` | The current logo (rose script), heart can stickers and the rose icon, built by `brand/make_sticker.py` |
+| `brand/` | Earlier logo options and the scripts that build them (`make_logo*.py`, needs `pip install fonttools`) |
 | `design/crumble-reference/` | The crumble.co-inspired style guide and first mockup |
 | `docs/research/` | Market, pricing, supplier and ecommerce research |
 | `docs/plans/` | Plans for each piece of work |

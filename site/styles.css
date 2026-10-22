@@ -67,7 +67,7 @@ h1 em, h2 em { font-style: italic; color: var(--rose-gold); }
   padding: 14px var(--gutter); background: rgba(251, 246, 243, 0.94); backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--line);
 }
-.top__logo img { width: 160px; height: auto; }
+.top__logo img { width: 184px; height: auto; }
 .top__nav { display: flex; gap: 36px; font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase; }
 .top__nav a { text-decoration: none; padding: 4px 0; border-bottom: 1px solid transparent; }
 .top__nav a:hover { border-color: var(--rose-gold); }
@@ -318,7 +318,7 @@ html.bag-open { overflow: hidden; }
   .steps { grid-template-columns: 1fr; gap: 28px; }
   .steps li + li { border-left: 0; border-top: 1px solid var(--line); padding-top: 28px; }
   .options--fonts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .top__logo img { width: 130px; }
+  .top__logo img { width: 150px; }
 }
 @media (max-width: 480px) {
   .pack-cards { grid-template-columns: 1fr; }

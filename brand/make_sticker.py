@@ -195,16 +195,17 @@ def write(name, svg):
 
 
 def logo(dark=False):
-    """The plain wordmark with a rose dot."""
+    """The plain wordmark with a rose dot. dark=True gives a light-pink version for dark backgrounds."""
     d, b, dot = wordmark(0, 0, 200, "logo")
+    g0, g1 = ("#F7A8C2", "#FFD6E3") if dark else (PINK_DEEP, PINK)
     pad = 14
     rx, ry, rs = dot[0] + 12, dot[1] - 12, max(dot[2] * 1.25, 12)
     x0, y0 = b[0] - pad, min(b[1], ry - rs) - pad
     x1, y1 = max(b[2], rx + rs) + pad, b[3] + pad
     svg = (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="{x0:.0f} {y0:.0f} {x1 - x0:.0f} {y1 - y0:.0f}" role="img" aria-label="Pinkaholic">\n'
-           f'<defs><linearGradient id="ink" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="{PINK_DEEP}"/><stop offset="1" stop-color="{PINK}"/></linearGradient></defs>\n'
+           f'<defs><linearGradient id="ink" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="{g0}"/><stop offset="1" stop-color="{g1}"/></linearGradient></defs>\n'
            f'<path fill="url(#ink)" d="{d}"/>\n' + rose_svg("logo", rx, ry, rs, dots=420) + "\n</svg>\n")
-    write("logo-rose.svg", svg)
+    write("logo-rose-light.svg" if dark else "logo-rose.svg", svg)
 
 
 STYLES = {
@@ -259,6 +260,7 @@ def sticker(style, with_cutline=False):
 
 os.makedirs(OUT_DIR, exist_ok=True)
 logo()
+logo(dark=True)
 for st in STYLES:
     sticker(st)
     sticker(st, with_cutline=True)
