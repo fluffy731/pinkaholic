@@ -70,7 +70,7 @@ def word(font, text, x, base, size, heart_on_i=True, tracking=0.0):
             cs = glyph_contours(gs, g)
             dot = max(cs, key=lambda c: c[1][1])
             for c, _ in cs:
-                if c is dot:
+                if c is dot[0]:
                     continue
                 rp = RecordingPen()
                 rp.value = c

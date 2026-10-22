@@ -60,7 +60,7 @@ def build(key, fname):
             cs = contours(gs, gname)
             dot = max(cs, key=lambda c: c[1][1])  # contour with the highest bottom edge
             for c, b in cs:
-                if c is dot:
+                if c is dot[0]:
                     continue
                 rp = RecordingPen(); rp.value = c; rp.replay(tp)
             xmin, ymin, xmax, ymax = dot[1]

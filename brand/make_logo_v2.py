@@ -100,7 +100,7 @@ def build(key, fname, word, axes, style):
             cs = contours(gs, g)
             dot = max(cs, key=lambda c: c[1][1])
             for c, _ in cs:
-                if c is dot:
+                if c is dot[0]:
                     continue
                 rp = RecordingPen()
                 rp.value = c
