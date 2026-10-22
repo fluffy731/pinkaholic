@@ -97,11 +97,10 @@ def rose_shapes(seed=3):
     rnd = random.Random(seed)
     rings = [
         # radius, petal width, petals, arc length (deg), start angle (deg)
-        (0.21, 0.15, 1, 300, 200),
-        (0.42, 0.16, 2, 160, 120),
-        (0.63, 0.17, 3, 112, 40),
-        (0.84, 0.18, 3, 112, 95),
-        (1.05, 0.19, 4, 84, 10),
+        (0.22, 0.16, 1, 300, 200),
+        (0.47, 0.20, 2, 166, 120),
+        (0.74, 0.22, 3, 114, 50),
+        (1.02, 0.24, 3, 112, 105),
     ]
     shapes = []
     for r, w, n, arc, start in rings:
