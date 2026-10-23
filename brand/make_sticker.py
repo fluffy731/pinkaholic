@@ -75,51 +75,57 @@ def outline(font, text, x, base, size, drop_last_i_dot=False, tracking=0.0):
 
 # ---------- the rose ----------
 
-def crescent(r, a0, a1, w, rnd, steps=28):
-    """A petal: the band between two arcs, tapering to points at both ends."""
+def crescent(r, a0, a1, w, rnd, steps=28, curl=False, centre=(0.0, 0.0)):
+    """A petal: the band between two arcs. Both ends taper to soft blunt tips, like a stencil cut;
+    curl=True gives the bud's one-sided brushed tail instead."""
+    ox, oy = centre
     pts = []
     for i in range(steps + 1):
         a = a0 + (a1 - a0) * i / steps
-        rr = r * (1 + rnd.uniform(-0.012, 0.012))
-        pts.append((rr * math.cos(a), rr * math.sin(a)))
+        rr = r * (1 + rnd.uniform(-0.01, 0.01))
+        pts.append((ox + rr * math.cos(a), oy + rr * math.sin(a)))
     mid = (a0 + a1) / 2
     for i in range(steps, -1, -1):
         a = a0 + (a1 - a0) * i / steps
         f = i / steps
-        taper = min(1.0, f * 6) * min(1.0, (1 - f) * 1.7) ** 0.8   # blunt stencil cut at the start, brushed tail at the end
+        if curl:
+            taper = min(1.0, f * 6) * min(1.0, (1 - f) * 1.7) ** 0.8
+        else:
+            taper = min(1.0, math.sin(math.pi * f) * 2.2)
         ri = r - w * taper
-        pts.append((ri * math.cos(a) + w * 0.12 * math.cos(mid), ri * math.sin(a) + w * 0.12 * math.sin(mid)))
+        pts.append((ox + ri * math.cos(a) + w * 0.15 * math.cos(mid), oy + ri * math.sin(a) + w * 0.15 * math.sin(mid)))
     return pts
 
 
-def rose_shapes(seed=3):
-    """Stencil rose in unit space (radius about 1): a curled bud and rings of broken petals."""
-    rnd = random.Random(seed)
-    rings = [
-        # radius, petal width, petals, arc length (deg), start angle (deg)
-        (0.22, 0.16, 1, 300, 200),
-        (0.47, 0.20, 2, 166, 120),
-        (0.74, 0.22, 3, 114, 50),
-        (1.02, 0.24, 3, 112, 105),
-    ]
-    shapes = []
-    for r, w, n, arc, start in rings:
-        for k in range(n):
-            a0 = math.radians(start + k * 360 / n + rnd.uniform(-10, 10))
-            a1 = a0 + math.radians(arc + rnd.uniform(-14, 14))
-            shapes.append(crescent(r, a0, a1, w, rnd))
-    # A small solid heart of the bloom.
-    shapes.append([(0.07 * math.cos(t / 12 * math.tau), 0.07 * math.sin(t / 12 * math.tau)) for t in range(12)])
-    return shapes
+# A hand-drawn stencil rose, front view, on a 100 x 100 grid centred on (50, 50).
+# White gaps between the pieces are the stencil bridges.
+ROSE_PATHS = [
+    # bud: a thick curl
+    "M50 30 C58 30 63 36 61 42 C59 48 51 50 46.5 46 C43.5 43 45 37.5 49.5 37.5 C52.5 37.5 54 40 52 42.5 "
+    "L55 44 C58.5 39.5 56 33.5 49.5 33.5 C42 33.5 39.5 42.5 44.5 48 C50 53.5 61 51.5 64.5 43.5 "
+    "C67.5 35.5 61.5 26.5 51 26.5 C47 26.5 44 28 42 30 C44.5 30.5 47 30 50 30 Z",
+    # inner left and right petals hugging the bud
+    "M40 29 C34 33 32 40 34 47 C36 53 42 57 49 57.5 L49 54 C43.5 53.5 39.5 50 38 45 C36.5 39 37.5 33.5 40 29 Z",
+    "M62 26 C68.5 30 71 37 69.5 44 C68 51.5 61.5 57 53 57.5 L53 54 C59.5 53.5 64.5 49.5 65.5 44 C66.5 37.5 65 31 62 26 Z",
+    # front cup
+    "M27 41 C27.5 54 37 63.5 50 63.5 C63 63.5 72.5 54 73 41 C69.5 52 61 59.5 50 59.5 C39 59.5 30.5 52 27 41 Z",
+    # outer petals with pointed tips at the top corners
+    "M33 19 C24 25 19.5 35 21 45 C22 52 25 57.5 30 61.5 C26.5 54 25.5 46 27 38.5 C28.5 30.5 32.5 24.5 38.5 21 Z",
+    "M67 19 C76 25 80.5 35 79 45 C78 52 75 57.5 70 61.5 C73.5 54 74.5 46 73 38.5 C71.5 30.5 67.5 24.5 61.5 21 Z",
+    # back petal arching over the bud, notched in the middle
+    "M38.5 19.5 C44 14.5 56 14.5 61.5 19.5 C57.5 18.5 53.5 19.5 50 23 C46.5 19.5 42.5 18.5 38.5 19.5 Z",
+    # wide bowl at the bottom
+    "M19 55 C23 72.5 35.5 83 50 83 C64.5 83 77 72.5 81 55 C75.5 67.5 64 75.5 50 75.5 C36 75.5 24.5 67.5 19 55 Z",
+]
 
 
 def poly_d(pts, tf):
     return "M" + " L".join(f"{tf(x, y)[0]:.2f} {tf(x, y)[1]:.2f}" for x, y in pts) + " Z"
 
 
-def rose_svg(uid, cx, cy, radius, seed=3, rotate=-14, dots=2600, squash=0.94):
-    dots = int(dots * 2.6)
+def rose_svg(uid, cx, cy, radius, seed=3, rotate=-4, dots=2600, squash=0.9):
     """Speckled stencil rose: rose shapes as a mask over a base tint and a field of spray dots."""
+    dots = int(dots * 2.6)
     rad = math.radians(rotate)
 
     def tf(x, y):
@@ -127,8 +133,9 @@ def rose_svg(uid, cx, cy, radius, seed=3, rotate=-14, dots=2600, squash=0.94):
         return (cx + radius * (x * math.cos(rad) - y * math.sin(rad)),
                 cy + radius * (x * math.sin(rad) + y * math.cos(rad)))
 
-    shapes = rose_shapes(seed)
-    mask = "".join(f'<path fill="#fff" d="{poly_d(p, tf)}"/>' for p in shapes)
+    k = radius / 34.0      # the drawing spans about 68 units across
+    mask = (f'<g transform="translate({cx:.2f} {cy:.2f}) rotate({rotate}) scale({k:.4f} {k * squash:.4f}) translate(-50 -51)">'
+            + "".join(f'<path fill="#fff" d="{p}"/>' for p in ROSE_PATHS) + "</g>")
     rnd = random.Random(seed * 101)
     dot_svg = []
     for _ in range(dots):
