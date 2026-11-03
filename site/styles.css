@@ -344,14 +344,14 @@ html.bag-open { overflow: hidden; }
 .bag-item__name { margin: 0; font: 700 23px/1.1 var(--display); }
 .bag-item__meta { margin: 0 0 4px; font-size: 14px; font-weight: 600; color: var(--wine-soft); }
 .bag-item__detail { margin: 0; font-size: 15px; color: var(--wine-soft); overflow-wrap: anywhere; }
-.bag-item__row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 10px; }
+.bag-item__row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; margin-top: 10px; }
 .bag-item__price { font: 700 24px var(--display); }
 .bag-item__actions { display: flex; gap: 24px; }
-.stepper { display: inline-grid; grid-template-columns: 44px minmax(64px, auto) 44px; align-items: center; border-radius: 999px; background: var(--white); box-shadow: inset 0 0 0 1.5px var(--line); }
+.stepper { display: inline-grid; grid-template-columns: 44px auto 44px; align-items: center; border-radius: 999px; background: var(--white); box-shadow: inset 0 0 0 1.5px var(--line); }
 .stepper button { height: 44px; background: none; border: 0; border-radius: 50%; color: var(--wine); font: 500 20px var(--sans); cursor: pointer; }
 .stepper button:hover:not(:disabled) { background: var(--blush); }
 .stepper button:disabled { color: var(--line); cursor: default; }
-.stepper span { text-align: center; font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.stepper span { padding: 0 6px; text-align: center; font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
 .bag__empty { display: grid; justify-items: center; gap: 10px; text-align: center; padding: 56px 16px; color: var(--wine-soft); }
 .bag__empty img { width: 110px; height: auto; margin-bottom: 6px; }
 .bag__empty p { margin: 0; max-width: 28ch; }
@@ -461,3 +461,6 @@ html.bag-open { overflow: hidden; }
   html { scroll-behavior: auto; }
   *, *::before, *::after { transition-duration: 0s !important; }
 }
+.thanks .lede { margin-inline: auto; }
+.thanks__words { margin: 0 auto 28px; max-width: 34em; }
+.doc-page .top .btn { min-height: 44px; padding: 0 22px; font-size: 15px; }

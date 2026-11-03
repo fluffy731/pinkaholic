@@ -3,22 +3,40 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#F9D5DF">
   <meta name="robots" content="noindex">
   <title>Thank you | Pinkaholic</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Hanken+Grotesk:wght@400..700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-  <main class="doc" style="text-align:center">
-    <img src="assets/logo.svg" alt="Pinkaholic" width="220" height="55" style="margin:0 auto 28px">
+<body class="doc-page">
+  <header class="top">
+    <a class="top__logo" href="./" aria-label="Pinkaholic home"><img src="assets/logo.svg" alt="" width="200" height="54"></a>
+    <a class="btn" href="./#design">Design yours</a>
+  </header>
+
+  <main class="doc thanks">
+    <img src="assets/rose-leaves.svg" alt="" width="150" height="122">
     <h1>Thank you, <em>pink friend.</em></h1>
-    <p class="lede" style="margin-inline:auto">Your order is in. You'll get a receipt by email now, and a tracking link once your balls are printed and on their way. Most orders arrive in about 14 days.</p>
+    <p class="lede">Your order is in. You'll get a receipt by email now, and a tracking link once your balls are printed and on their way. Most orders arrive in about 14 days.</p>
     <p id="your-text" hidden></p>
     <a class="btn" href="./">Back to Pinkaholic</a>
   </main>
+
+  <footer class="foot">
+    <img class="foot__logo" src="assets/logo-on-dark.svg" alt="Pinkaholic" width="240" height="64">
+    <nav class="foot__nav" aria-label="Footer">
+      <a href="policies.html#shipping">Shipping</a>
+      <a href="policies.html#returns">Returns</a>
+      <a href="policies.html#privacy">Privacy</a>
+      <a data-mail href="#">Contact</a>
+    </nav>
+    <p class="foot__small">© <span data-year>2026</span> Pinkaholic. Prices in AUD and include GST.</p>
+  </footer>
+  <script src="config.js"></script>
   <script>
     // After a paid Stripe checkout: show what was ordered, then empty the bag.
     (function () {
@@ -33,12 +51,13 @@
           p.textContent = (params.get("order") ? "Order " + params.get("order") + ": " : "") +
             words.map(function (w) { return "“" + w + "”"; }).join(", ") +
             ". Spotted a typo? Reply to your receipt email within 24 hours and we'll fix it before printing.";
-          p.className = "order__soon";
-          p.style.margin = "0 auto 28px";
-          p.style.maxWidth = "34em";
+          p.className = "order__soon thanks__words";
           p.hidden = false;
         }
         if (params.get("session_id")) localStorage.removeItem("pinkaholic-bag");
+        var email = (window.PINKAHOLIC || {}).contactEmail || "hello@pinkaholic.com.au";
+        document.querySelectorAll("[data-mail]").forEach(function (a) { a.href = "mailto:" + email; });
+        document.querySelectorAll("[data-year]").forEach(function (s) { s.textContent = new Date().getFullYear(); });
       } catch (e) {}
     })();
   </script>
