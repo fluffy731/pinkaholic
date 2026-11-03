@@ -12,6 +12,7 @@
   var items = load();
   var memoryOnly = false;
   var lastFocus = null;
+  var removed = null;   // { item, index } of the last design removed, for Undo
 
   function load() {
     try { return JSON.parse(localStorage.getItem(KEY) || "[]") || []; } catch (e) { return []; }
@@ -30,7 +31,7 @@
   function setOf(id) { return cfg.packs.filter(function (p) { return p.id === id; })[0] || cfg.packs[0]; }
 
   function money(n) {
-    return new Intl.NumberFormat("en-AU", { style: "currency", currency: cfg.currency, minimumFractionDigits: n % 1 ? 2 : 0 }).format(n);
+    return "A$" + new Intl.NumberFormat("en-AU", { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 }).format(n);
   }
 
   function addDays(days) {
@@ -64,6 +65,7 @@
   }
 
   function close() {
+    removed = null;
     bag.classList.remove("is-open");
     document.documentElement.classList.remove("bag-open");
     setTimeout(function () { bag.hidden = true; }, 280);
@@ -73,8 +75,8 @@
   function render() {
     var n = count();
     $("bag-count").textContent = n;
-    $("bag-count").setAttribute("aria-label", n + (n === 1 ? " set" : " sets") + " in your bag");
     $("bag-count").classList.toggle("is-empty", !n);
+    $("bag-open").setAttribute("aria-label", "Bag, " + n + (n === 1 ? " set" : " sets"));
     $("bag-n").textContent = n ? n + (n === 1 ? " set" : " sets") : "";
 
     var list = $("bag-items");
@@ -96,7 +98,7 @@
       name.textContent = set.name;
       var meta = document.createElement("p");
       meta.className = "bag-item__meta";
-      meta.textContent = set.qty + (set.qty > 1 ? " balls" : " ball") + " per set";
+      meta.textContent = set.qty + (set.qty > 1 ? " balls" : " ball") + " in each set";
       body.append(name, meta);
       summary(it).forEach(function (line) {
         var p = document.createElement("p");
@@ -114,7 +116,7 @@
       minus.disabled = it.qty <= 1;
       minus.addEventListener("click", function () { setQty(it.id, it.qty - 1); });
       var q = document.createElement("span");
-      q.textContent = it.qty; q.setAttribute("aria-live", "polite");
+      q.textContent = it.qty + (it.qty === 1 ? " set" : " sets"); q.setAttribute("aria-live", "polite");
       var plus = document.createElement("button");
       plus.type = "button"; plus.textContent = "+"; plus.setAttribute("aria-label", "One more " + set.name);
       plus.disabled = it.qty >= MAX_QTY;
@@ -150,8 +152,32 @@
     $("bag-eta").innerHTML = "Arrives around <b>" + addDays(cfg.delivery.minDays) + " – " + addDays(cfg.delivery.maxDays) + "</b>";
     $("bag-error").hidden = !memoryOnly;
     if (memoryOnly) $("bag-error").textContent = "Your browser's storage is full, so this bag will be lost if you close the page. Check out before leaving.";
-    $("bag-fallback").hidden = true;
-    bag.querySelector(".bag__secure").hidden = !workerReady();
+    // Until card payments are live, say plainly that the order goes by email.
+    var byEmail = !workerReady();
+    $("bag-checkout").textContent = byEmail ? "Email my order" : "Checkout";
+    $("bag-how").hidden = !byEmail;
+    $("bag-how-logo").hidden = !items.some(function (it) { return it.logo; });
+    $("bag-secure").hidden = byEmail;
+    renderUndo();
+  }
+
+  function renderUndo() {
+    var box = $("bag-undo");
+    box.hidden = !removed;
+    box.textContent = "";
+    if (!removed) return;
+    var msg = document.createElement("span");
+    msg.textContent = setOf(removed.item.set).name + " removed.";
+    var undo = document.createElement("button");
+    undo.type = "button"; undo.className = "link"; undo.textContent = "Undo";
+    undo.addEventListener("click", function () {
+      items.splice(Math.min(removed.index, items.length), 0, removed.item);
+      removed = null;
+      save(); render();
+      var first = bag.querySelector(".bag-item button");
+      if (first) first.focus();
+    });
+    box.append(msg, undo);
   }
 
   function setQty(id, qty) {
@@ -160,10 +186,14 @@
   }
 
   function removeItem(id) {
-    items = items.filter(function (it) { return it.id !== id; });
+    var index = -1;
+    items.forEach(function (it, i) { if (it.id === id) index = i; });
+    if (index < 0) return;
+    removed = { item: items[index], index: index };
+    items.splice(index, 1);
     save(); render();
-    var first = bag.querySelector(".bag-item button, .bag__empty .btn");
-    if (first) first.focus();
+    var undo = bag.querySelector("#bag-undo button");
+    if (undo) undo.focus();
   }
 
   // ---------- Checkout ----------
@@ -186,9 +216,7 @@
     var btn = $("bag-checkout"), err = $("bag-error");
     err.hidden = true;
     if (!workerReady()) {
-      $("bag-email").href = emailOrder();
-      $("bag-email-logo").hidden = !items.some(function (it) { return it.logo; });
-      $("bag-fallback").hidden = false;
+      window.location.href = emailOrder();
       return;
     }
     btn.disabled = true;
@@ -224,8 +252,9 @@
     if (bag.hidden) return;
     if (e.key === "Escape") { close(); return; }
     if (e.key !== "Tab") return;
-    // Keep keyboard focus inside the open drawer.
-    var f = bag.querySelectorAll(".bag__panel button:not([disabled]), .bag__panel a[href]");
+    // Keep keyboard focus inside the open drawer (hidden buttons don't count).
+    var f = Array.prototype.filter.call(bag.querySelectorAll(".bag__panel button:not([disabled]), .bag__panel a[href]"),
+      function (el) { return el.getClientRects().length > 0; });
     if (!f.length) return;
     var first = f[0], last = f[f.length - 1];
     if (e.shiftKey && document.activeElement === first) { last.focus(); e.preventDefault(); }
@@ -242,6 +271,7 @@
         item.id = editingId;
         items = items.map(function (it) { return it.id === editingId ? item : it; });
       } else {
+        removed = null;
         item.id = "d" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
         items.push(item);
       }

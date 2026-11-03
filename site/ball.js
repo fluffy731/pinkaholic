@@ -3,15 +3,15 @@
 (function () {
   "use strict";
 
-  var FELT = [248, 156, 190];
-  var SHEEN = [255, 214, 228];
+  var FELT = [250, 190, 208];      // the soft pink of the real ball
+  var SHEEN = [255, 222, 232];
   var SEAM = [248, 242, 239];
   var INKS = { black: [30, 22, 27], white: [255, 255, 255], wine: [92, 24, 52], gold: [128, 88, 36] };
   var FONTS = {
     script: { css: '400 {px}px "Great Vibes", cursive', scale: 1.3, upper: false, track: 0, line: 0.95 },
-    serif: { css: 'italic 600 {px}px "Cormorant Garamond", Georgia, serif', scale: 1.05, upper: false, track: 0, line: 1.05 },
+    serif: { css: 'italic 600 {px}px "Bodoni Moda", Georgia, serif', scale: 0.9, upper: false, track: 0, line: 1.05 },
     caps: { css: '600 {px}px "Cinzel", Georgia, serif', scale: 0.78, upper: true, track: 0.08, line: 1.25 },
-    modern: { css: '500 {px}px "Jost", system-ui, sans-serif', scale: 0.74, upper: true, track: 0.16, line: 1.3 }
+    modern: { css: '600 {px}px "Hanken Grotesk", system-ui, sans-serif', scale: 0.72, upper: true, track: 0.16, line: 1.3 }
   };
   var TEX = 1024;          // flat print texture size
   var THETA = 1.0;         // the texture covers ±THETA radians of the ball
@@ -132,7 +132,7 @@
         var diff = nx * L[0] + ny * L[1] + nz * L[2];
         // Wrap lighting gives felt its soft shadow edge; shadows lean deeper rose, not grey.
         var wrap = Math.max(0, (diff + 0.5) / 1.5);
-        var sv0 = (0.3 + 0.86 * wrap) * (1 - 0.16 * Math.pow(Math.max(0, dy), 2));
+        var sv0 = (0.46 + 0.66 * wrap) * (1 - 0.16 * Math.pow(Math.max(0, dy), 2));
         shade[k] = sv0;
         shadeG[k] = Math.pow(sv0, 1.32);
         shadeB[k] = Math.pow(sv0, 1.12);
@@ -336,9 +336,9 @@
   // Load the print fonts before the first render so text isn't drawn in a fallback face.
   var ready = (document.fonts && document.fonts.load) ? Promise.all([
     document.fonts.load('400 60px "Great Vibes"'),
-    document.fonts.load('italic 600 60px "Cormorant Garamond"'),
+    document.fonts.load('italic 600 60px "Bodoni Moda"'),
     document.fonts.load('600 60px "Cinzel"'),
-    document.fonts.load('500 60px "Jost"')
+    document.fonts.load('600 60px "Hanken Grotesk"')
   ]).catch(function () {}) : Promise.resolve();
 
   // Turn an uploaded image into a print-ready logo: trimmed, optionally without its white background.

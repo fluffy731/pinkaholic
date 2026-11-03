@@ -9,82 +9,132 @@
   <meta property="og:title" content="Pinkaholic | Personalised pink tennis balls">
   <meta property="og:description" content="Your name, your words or your logo, printed on a pink tennis ball. Delivered across Australia and New Zealand.">
   <meta property="og:url" content="https://pinkaholic.com.au/">
-  <meta name="theme-color" content="#FBF6F3">
+  <meta name="theme-color" content="#F9D5DF">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Great+Vibes&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Cinzel:wght@600&family=Great+Vibes&family=Hanken+Grotesk:wght@400..700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <a class="skip" href="#design">Skip to the designer</a>
 
-  <p class="notice">Complimentary tracked shipping to Australia &amp; New Zealand <span aria-hidden="true">·</span> Printed to order</p>
+  <svg width="0" height="0" class="defs" aria-hidden="true" focusable="false">
+    <defs>
+      <radialGradient id="felt" cx="38%" cy="32%" r="75%">
+        <stop offset="0" stop-color="#FCD3DF"/><stop offset=".55" stop-color="#F3B1C4"/><stop offset="1" stop-color="#DE8FA8"/>
+      </radialGradient>
+      <linearGradient id="tube" x1="0" x2="1">
+        <stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".18" stop-color="#fff" stop-opacity=".08"/>
+        <stop offset=".8" stop-color="#fff" stop-opacity=".05"/><stop offset="1" stop-color="#fff" stop-opacity=".45"/>
+      </linearGradient>
+      <!-- The gift can: clear tube, pink lid, frosted label with a heart. -->
+      <symbol id="can" viewBox="0 0 200 520">
+        <circle cx="100" cy="148" r="84" fill="url(#felt)"/>
+        <path d="M40 92c40 30 46 80 30 128" fill="none" stroke="#FFF4EC" stroke-width="5" stroke-linecap="round" opacity=".9"/>
+        <circle cx="100" cy="412" r="84" fill="url(#felt)"/>
+        <path d="M156 360c-34 34-38 82-18 122" fill="none" stroke="#FFF4EC" stroke-width="5" stroke-linecap="round" opacity=".9"/>
+        <rect x="10" y="52" width="180" height="458" rx="30" fill="url(#tube)" stroke="#fff" stroke-opacity=".9" stroke-width="2"/>
+        <rect x="10" y="196" width="180" height="172" fill="#FFF3F7" fill-opacity=".92"/>
+        <path d="M100 340c-30-20-56-40-56-70 0-18 13-31 29-31 12 0 21 7 27 17 6-10 15-17 27-17 16 0 29 13 29 31 0 30-26 50-56 70z" fill="none" stroke="#E2306F" stroke-width="2.2"/>
+        <image href="assets/logo.svg" x="56" y="268" width="88" height="24"/>
+        <rect x="4" y="8" width="192" height="52" rx="12" fill="#EE6C9C"/>
+        <rect x="4" y="44" width="192" height="16" rx="6" fill="#D9527F" opacity=".55"/>
+        <rect x="16" y="14" width="168" height="8" rx="4" fill="#fff" opacity=".25"/>
+      </symbol>
+      <symbol id="heart" viewBox="0 0 100 92">
+        <path d="M50 88C22 68 2 50 2 27 2 12 13 2 27 2c10 0 18 6 23 15C55 8 63 2 73 2c14 0 25 10 25 25 0 23-20 41-48 61z" fill="none" stroke="currentColor" stroke-width="1.6" vector-effect="non-scaling-stroke"/>
+      </symbol>
+      <symbol id="tick" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    </defs>
+  </svg>
+
+  <p class="notice">Free tracked delivery to Australia &amp; New Zealand<span class="notice__more"> <span aria-hidden="true">·</span> Printed to order</span></p>
 
   <header class="top">
-    <a class="top__logo" href="#top" aria-label="Pinkaholic home"><img src="assets/logo.svg" alt="Pinkaholic" width="190" height="48"></a>
-    <nav class="top__nav" aria-label="Main">
+    <a class="top__logo" href="#top" aria-label="Pinkaholic home"><img src="assets/logo.svg" alt="" width="200" height="54"></a>
+    <nav class="top__nav" id="menu" aria-label="Main">
       <a href="#design">Design</a>
-      <a href="#occasions">Occasions</a>
       <a href="#packs">Sets</a>
+      <a href="#occasions">Occasions</a>
       <a href="#faq">Questions</a>
     </nav>
     <div class="top__actions">
-      <a class="btn btn--small top__cta" href="#design">Personalise</a>
+      <button class="menu-btn" type="button" id="menu-btn" aria-expanded="false" aria-controls="menu">Menu</button>
       <button class="bag-btn" type="button" id="bag-open" aria-haspopup="dialog" aria-controls="bag">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l-1.2 12H6.2L5 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
         <span class="bag-btn__label">Bag</span>
-        <span class="bag-btn__count" id="bag-count" aria-label="0 items in your bag">0</span>
+        <span class="bag-btn__count" id="bag-count">0</span>
       </button>
     </div>
   </header>
 
   <main id="top">
-    <section class="hero">
+    <section class="hero" aria-labelledby="hero-title">
       <div class="hero__copy">
-        <p class="eyebrow">Personalised tennis balls</p>
-        <h1>Made yours, <em>in pink.</em></h1>
-        <p class="lede">Your name, your words or your logo, printed on a soft pink felt ball. A gift for the court, the wedding table and everyone in between.</p>
-        <div class="hero__cta">
-          <a class="btn" href="#design">Design your ball</a>
-          <a class="link" href="#packs">View the sets</a>
-        </div>
+        <h1 id="hero-title">Your name,<br> on a <em>pink ball.</em></h1>
+        <p class="hero__lede">Soft pink felt tennis balls, printed with your words or your logo. For weddings, hens, clubs and the people you love.</p>
+        <form class="try" id="try" novalidate>
+          <label class="try__label" for="try-name">Type a name to see it printed</label>
+          <div class="try__row">
+            <input id="try-name" type="text" autocomplete="off" spellcheck="false" placeholder="Chloe &amp; Jack" aria-describedby="try-note">
+            <button class="btn" type="submit">Design yours</button>
+          </div>
+          <p class="try__note" id="try-note">From A$24.95 a ball. Tracked delivery included.</p>
+        </form>
       </div>
-      <figure class="hero__art">
-        <canvas class="ball-canvas" id="hero-ball" width="640" height="640" aria-label="A pink tennis ball printed with a name"></canvas>
-      </figure>
+      <div class="hero__art">
+        <svg class="hero__heart" aria-hidden="true"><use href="#heart"/></svg>
+        <canvas class="ball-canvas hero__ball" id="hero-ball" width="640" height="640" role="img" aria-label="A pink tennis ball printed with a name"></canvas>
+        <svg class="hero__can" viewBox="0 0 200 520" role="img" aria-label="The Pinkaholic gift can"><use href="#can"/></svg>
+        <img class="hero__rose" src="assets/rose-leaves.svg" alt="" width="96" height="78">
+      </div>
     </section>
 
     <section class="designer" id="design" aria-labelledby="design-title">
-      <header class="section-head">
-        <p class="eyebrow">The atelier</p>
-        <h2 id="design-title">Design <em>your ball</em></h2>
-        <p class="section-lede">Add your words, a logo, or both. The preview shows how the print sits on the felt.</p>
-      </header>
-
       <div class="designer__grid">
-        <div class="designer__preview">
-          <canvas class="ball-canvas" id="preview" width="720" height="720" role="img" aria-label="Preview of your personalised pink tennis ball"></canvas>
+        <div class="designer__stage">
+          <div class="stage">
+            <canvas class="ball-canvas" id="preview" width="720" height="720" role="img" aria-label="Preview of your personalised pink tennis ball"></canvas>
+          </div>
           <p class="preview-note">Preview. Print on felt is slightly softer than on screen.</p>
         </div>
 
         <form class="designer__form" id="designer" novalidate>
+          <header class="designer__head">
+            <h2 id="design-title">Design your ball</h2>
+            <p>Add your words, a logo, or both. Up to two lines of 14 characters.</p>
+          </header>
+
+          <div class="ideas">
+            <p class="ideas__label" id="ideas-label">Start from an idea</p>
+            <div class="ideas__chips" role="group" aria-labelledby="ideas-label">
+              <button type="button" class="chip" data-idea='{"line1":"Chloe & Jack","line2":"12.03.27","font":"script","ink":"wine"}'>Wedding</button>
+              <button type="button" class="chip" data-idea='{"line1":"Bride Squad","line2":"","font":"serif","ink":"white"}'>Hens</button>
+              <button type="button" class="chip" data-idea='{"line1":"Champion","line2":"2026","font":"caps","ink":"gold"}'>Club</button>
+              <button type="button" class="chip" data-idea='{"line1":"Love all","line2":"","font":"modern","ink":"black"}'>Keepsake</button>
+            </div>
+            <p class="ideas__undo" id="idea-undo" role="status" hidden>Your design was replaced. <button type="button" class="link" id="idea-undo-btn">Undo</button></p>
+          </div>
+
           <fieldset>
-            <legend><span>01</span> Your words</legend>
+            <legend>Your words</legend>
             <div class="field">
               <label for="line1">First line</label>
-              <input id="line1" name="line1" type="text" autocomplete="off" maxlength="14" value="Chloe &amp; Jack" aria-describedby="line1-count">
-              <span class="count" id="line1-count" aria-live="polite"></span>
+              <input id="line1" name="line1" type="text" autocomplete="off" value="Chloe &amp; Jack" aria-describedby="line1-count line1-error">
+              <span class="count" id="line1-count"></span>
+              <p class="field__error" id="line1-error" hidden></p>
             </div>
             <div class="field">
               <label for="line2">Second line <span class="opt">optional</span></label>
-              <input id="line2" name="line2" type="text" autocomplete="off" maxlength="14" value="" aria-describedby="line2-count">
-              <span class="count" id="line2-count" aria-live="polite"></span>
+              <input id="line2" name="line2" type="text" autocomplete="off" value="" aria-describedby="line2-count line2-error">
+              <span class="count" id="line2-count"></span>
+              <p class="field__error" id="line2-error" hidden></p>
             </div>
           </fieldset>
 
           <fieldset>
-            <legend><span>02</span> Lettering</legend>
-            <div class="options options--fonts" role="radiogroup" aria-label="Lettering">
+            <legend>Lettering</legend>
+            <div class="options options--fonts">
               <label class="opt-card"><input type="radio" name="font" value="script" checked><span class="f-script">Script</span></label>
               <label class="opt-card"><input type="radio" name="font" value="serif"><span class="f-serif">Serif</span></label>
               <label class="opt-card"><input type="radio" name="font" value="caps"><span class="f-caps">Capitals</span></label>
@@ -93,8 +143,8 @@
           </fieldset>
 
           <fieldset>
-            <legend><span>03</span> Ink</legend>
-            <div class="options options--inks" role="radiogroup" aria-label="Ink">
+            <legend>Ink</legend>
+            <div class="options options--inks">
               <label class="swatch"><input type="radio" name="ink" value="wine" checked><i style="--c:#5C1834"></i><span>Wine</span></label>
               <label class="swatch"><input type="radio" name="ink" value="black"><i style="--c:#1E161B"></i><span>Black</span></label>
               <label class="swatch"><input type="radio" name="ink" value="white"><i style="--c:#FFFFFF"></i><span>White</span></label>
@@ -103,14 +153,16 @@
           </fieldset>
 
           <fieldset>
-            <legend><span>04</span> Logo <span class="opt">optional</span></legend>
+            <legend>Logo <span class="opt">optional</span></legend>
             <div class="upload" id="upload">
-              <input type="file" id="logo-file" accept="image/png,image/jpeg,image/svg+xml,image/webp">
+              <input type="file" id="logo-file" accept="image/png,image/jpeg,image/svg+xml,image/webp" aria-describedby="logo-help logo-msg">
               <label for="logo-file" class="upload__drop">
+                <img src="assets/rose.svg" alt="" width="34" height="35">
                 <strong id="logo-name">Add a logo or crest</strong>
-                <span>PNG with a transparent background works best. JPG, SVG or WebP up to 5 MB.</span>
+                <span id="logo-help">PNG with a transparent background works best. JPG, SVG or WebP up to 5 MB.</span>
               </label>
-              <button type="button" class="link" id="logo-remove" hidden>Remove</button>
+              <p class="field__error" id="logo-msg" role="alert" hidden></p>
+              <button type="button" class="link" id="logo-remove" hidden>Remove logo</button>
             </div>
             <div class="logo-opts" id="logo-opts" hidden>
               <div class="seg" role="radiogroup" aria-label="Logo position">
@@ -118,6 +170,7 @@
                 <label><input type="radio" name="layout" value="below"><span>Below words</span></label>
                 <label><input type="radio" name="layout" value="only"><span>Logo only</span></label>
               </div>
+              <p class="hint" id="only-note" hidden>With Logo only, your words won't be printed.</p>
               <label for="logo-size" class="range-label">Logo size</label>
               <input type="range" id="logo-size" min="0.5" max="1.4" step="0.05" value="1">
               <div class="checks">
@@ -129,11 +182,11 @@
           </fieldset>
 
           <fieldset>
-            <legend><span>05</span> Set</legend>
+            <legend>Set</legend>
             <div class="sets" id="pack-pick"></div>
           </fieldset>
 
-          <div class="order">
+          <div class="order" id="order">
             <p class="order__total"><span>Price</span> <strong id="total" aria-live="polite"></strong></p>
             <p class="order__ship" id="ship-note"></p>
             <p class="order__editing" id="editing" hidden>Editing a design in your bag. <button type="button" class="link" id="edit-cancel">Cancel</button></p>
@@ -142,80 +195,88 @@
           </div>
         </form>
       </div>
-    </section>
 
-    <section class="how" id="how" aria-labelledby="how-title">
-      <header class="section-head">
-        <p class="eyebrow">How it works</p>
-        <h2 id="how-title">From your words <em>to your door</em></h2>
-      </header>
-      <ol class="steps">
-        <li><span class="steps__num">01</span><h3>Personalise</h3><p>Choose your words, lettering and ink, and add a logo if you like.</p></li>
-        <li><span class="steps__num">02</span><h3>Printed to order</h3><p>Each ball is printed for you. Logo orders get an artwork check by email first.</p></li>
-        <li><span class="steps__num">03</span><h3>Delivered</h3><p>Tracked delivery anywhere in Australia or New Zealand, usually in about 14 days.</p></li>
-      </ol>
-    </section>
-
-    <section class="occasions" id="occasions" aria-labelledby="occ-title">
-      <header class="section-head">
-        <p class="eyebrow">Occasions</p>
-        <h2 id="occ-title">For every <em>occasion</em></h2>
-      </header>
-      <div class="occ-grid">
-        <article class="occ" data-sample='{"line1":"Chloe & Jack","line2":"12.03.27","font":"script","ink":"wine"}'>
-          <canvas class="ball-canvas occ__ball" width="360" height="360" aria-hidden="true"></canvas>
-          <h3>Weddings</h3>
-          <p>Favours with both your names and the date. A keepsake guests actually take home.</p>
-          <button class="link" type="button">Use this design</button>
-        </article>
-        <article class="occ" data-sample='{"line1":"Bride Squad","line2":"","font":"serif","ink":"white"}'>
-          <canvas class="ball-canvas occ__ball" width="360" height="360" aria-hidden="true"></canvas>
-          <h3>Hens &amp; birthdays</h3>
-          <p>One for every guest, in the colour of the party.</p>
-          <button class="link" type="button">Use this design</button>
-        </article>
-        <article class="occ" data-sample='{"line1":"Champion","line2":"2026","font":"caps","ink":"gold"}'>
-          <canvas class="ball-canvas occ__ball" width="360" height="360" aria-hidden="true"></canvas>
-          <h3>Clubs &amp; teams</h3>
-          <p>Season trophies, pink ribbon rounds and thank-yous for the coach.</p>
-          <button class="link" type="button">Use this design</button>
-        </article>
-        <article class="occ" data-sample='{"line1":"Love all","line2":"","font":"modern","ink":"black"}'>
-          <canvas class="ball-canvas occ__ball" width="360" height="360" aria-hidden="true"></canvas>
-          <h3>Keepsakes</h3>
-          <p>A quiet message in the kit bag, or a ball for the desk.</p>
-          <button class="link" type="button">Use this design</button>
-        </article>
+      <div class="buybar" id="buybar" aria-hidden="true">
+        <p class="buybar__price"><span id="buybar-set"></span><strong id="buybar-total"></strong></p>
+        <button class="btn" type="submit" form="designer" tabindex="-1">Add to bag</button>
       </div>
     </section>
 
     <section class="packs" id="packs" aria-labelledby="packs-title">
-      <header class="section-head">
-        <p class="eyebrow">The sets</p>
-        <h2 id="packs-title">Choose <em>your set</em></h2>
-        <p class="section-lede">Every ball in a set carries the same design. Prices include GST and tracked shipping.</p>
-      </header>
+      <div class="packs__head">
+        <h2 id="packs-title">Pick your set</h2>
+        <p>Every ball in a set carries the same design. Prices are in Australian dollars and include GST and tracked delivery.</p>
+      </div>
       <div class="pack-cards" id="pack-cards"></div>
+      <p class="packs__more">Ordering 24 or more, or a different name on every ball? <a data-mail href="#">Email us</a> for event pricing from A$8.95 a ball.</p>
     </section>
 
-    <section class="trust" aria-label="Our promise">
-      <ul class="trust__list">
-        <li><b>Tracked delivery</b><span>Australia &amp; New Zealand</span></li>
-        <li><b>Secure checkout</b><span>Card, Apple Pay &amp; Google Pay</span></li>
-        <li><b>Printed to order</b><span>Made only for you</span></li>
-        <li><b>Print guarantee</b><span>Faulty print replaced</span></li>
+    <section class="occasions" id="occasions" aria-labelledby="occ-title">
+      <div class="occasions__head">
+        <h2 id="occ-title">Made for the moment</h2>
+        <p>Start from one of these, then make it yours.</p>
+      </div>
+      <div class="occ-grid">
+        <article class="occ" data-sample='{"line1":"Chloe & Jack","line2":"12.03.27","font":"script","ink":"wine"}'>
+          <canvas class="ball-canvas occ__ball" width="360" height="360" aria-hidden="true"></canvas>
+          <div class="occ__text">
+            <h3>Weddings</h3>
+            <p>Favours with both your names and the date. A keepsake guests actually take home.</p>
+            <button class="link" type="button" aria-label="Use the wedding design">Use this design</button>
+          </div>
+        </article>
+        <article class="occ" data-sample='{"line1":"Bride Squad","line2":"","font":"serif","ink":"white"}'>
+          <canvas class="ball-canvas occ__ball" width="360" height="360" aria-hidden="true"></canvas>
+          <div class="occ__text">
+            <h3>Hens &amp; birthdays</h3>
+            <p>One for every guest, in the colour of the party.</p>
+            <button class="link" type="button" aria-label="Use the hens design">Use this design</button>
+          </div>
+        </article>
+        <article class="occ" data-sample='{"line1":"Champion","line2":"2026","font":"caps","ink":"gold"}'>
+          <canvas class="ball-canvas occ__ball" width="360" height="360" aria-hidden="true"></canvas>
+          <div class="occ__text">
+            <h3>Clubs &amp; teams</h3>
+            <p>Season trophies, pink ribbon rounds and thank-yous for the coach.</p>
+            <button class="link" type="button" aria-label="Use the club design">Use this design</button>
+          </div>
+        </article>
+        <article class="occ" data-sample='{"line1":"Love all","line2":"","font":"modern","ink":"black"}'>
+          <canvas class="ball-canvas occ__ball" width="360" height="360" aria-hidden="true"></canvas>
+          <div class="occ__text">
+            <h3>Keepsakes</h3>
+            <p>A quiet message in the kit bag, or a ball for the desk.</p>
+            <button class="link" type="button" aria-label="Use the keepsake design">Use this design</button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="how" id="how" aria-labelledby="how-title">
+      <h2 id="how-title">From your words to your door</h2>
+      <ol class="steps">
+        <li><span class="steps__num" aria-hidden="true">1</span><h3>Personalise</h3><p>Choose your words, lettering and ink, and add a logo if you like.</p></li>
+        <li><span class="steps__num" aria-hidden="true">2</span><h3>Printed for you</h3><p>Each ball is printed to order. Logo orders get an artwork check by email first.</p></li>
+        <li><span class="steps__num" aria-hidden="true">3</span><h3>Delivered</h3><p>Tracked delivery anywhere in Australia or New Zealand, usually in about 14 days.</p></li>
+      </ol>
+      <ul class="promises" aria-label="Our promise">
+        <li><svg aria-hidden="true"><use href="#tick"/></svg>Tracked delivery, AU &amp; NZ</li>
+        <li><svg aria-hidden="true"><use href="#tick"/></svg>Prices include GST</li>
+        <li><svg aria-hidden="true"><use href="#tick"/></svg>Made only for you</li>
+        <li><svg aria-hidden="true"><use href="#tick"/></svg>Faulty print replaced</li>
       </ul>
     </section>
 
     <section class="faq" id="faq" aria-labelledby="faq-title">
-      <header class="section-head">
-        <p class="eyebrow">Questions</p>
-        <h2 id="faq-title">Good <em>to know</em></h2>
-      </header>
+      <div class="faq__aside">
+        <h2 id="faq-title">Good to know</h2>
+        <p>Something else on your mind? <a data-mail href="#">Email us</a> and a real person will reply.</p>
+        <img src="assets/rose-leaves.svg" alt="" width="150" height="122">
+      </div>
       <div class="faq__list">
         <details>
           <summary>How long does delivery take?</summary>
-          <p>Each order is printed for you and then shipped with tracking. Most orders arrive in about 14 days, and we show an estimated date before you pay. We'll email you a tracking link as soon as your order is on its way.</p>
+          <p>Each order is printed for you and then shipped with tracking. Most orders arrive in about 14 days, and we show an estimated date before you order. We'll email you a tracking link as soon as your order is on its way.</p>
         </details>
         <details>
           <summary>What can I print?</summary>
@@ -246,7 +307,7 @@
   </main>
 
   <footer class="foot">
-    <img src="assets/logo-on-dark.svg" alt="Pinkaholic" width="200" height="50">
+    <img class="foot__logo" src="assets/logo-on-dark.svg" alt="Pinkaholic" width="240" height="64">
     <p>Personalised pink tennis balls, delivered across Australia and New Zealand.</p>
     <nav class="foot__nav" aria-label="Footer">
       <a href="policies.html#shipping">Shipping</a>
@@ -262,15 +323,17 @@
     <div class="bag__scrim" data-bag-close></div>
     <aside class="bag__panel">
       <header class="bag__head">
+        <h2 id="bag-title">Your bag</h2>
+        <span class="bag__n" id="bag-n"></span>
         <button class="bag__close" type="button" data-bag-close aria-label="Close your bag">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
         </button>
-        <h2 id="bag-title">Your bag</h2>
-        <span class="bag__n" id="bag-n">0</span>
       </header>
       <div class="bag__body">
+        <p class="bag__undo" id="bag-undo" role="status" hidden></p>
         <ul class="bag__items" id="bag-items"></ul>
         <div class="bag__empty" id="bag-empty">
+          <img src="assets/rose-leaves.svg" alt="" width="110" height="90">
           <p class="bag__empty-title">Your bag is empty</p>
           <p>Design a pink ball with your words or logo, and it'll wait for you here.</p>
           <a class="btn" href="#design" data-bag-close>Design a ball</a>
@@ -278,14 +341,14 @@
       </div>
       <footer class="bag__foot" id="bag-foot" hidden>
         <p class="bag__line"><span>Subtotal</span><strong id="bag-subtotal"></strong></p>
-        <p class="bag__line bag__line--small"><span>Tracked shipping, AU &amp; NZ</span><span>Complimentary</span></p>
+        <p class="bag__line bag__line--small"><span>Tracked delivery, AU &amp; NZ</span><span>Included</span></p>
         <p class="bag__eta" id="bag-eta"></p>
+        <div class="bag__how" id="bag-how" hidden>
+          <p><b>How ordering works for now:</b> we'll open an email with your bag filled in. Add your delivery address<span id="bag-how-logo" hidden> and attach your logo files</span>, then send it. We'll reply with a secure payment link and a proof.</p>
+        </div>
         <button class="btn btn--wide" type="button" id="bag-checkout">Checkout</button>
         <p class="bag__error" id="bag-error" role="alert" hidden></p>
-        <div class="bag__fallback" id="bag-fallback" hidden>
-          <p>Online checkout opens soon. To order now, <a id="bag-email" href="#">email us your bag</a><span id="bag-email-logo" hidden> and attach your logo files</span>. We'll reply with a payment link.</p>
-        </div>
-        <p class="bag__secure">Prices in AUD, including GST. Secure payment by Stripe.</p>
+        <p class="bag__secure" id="bag-secure">Prices in AUD, including GST. Secure payment by Stripe.</p>
       </footer>
     </aside>
   </div>
