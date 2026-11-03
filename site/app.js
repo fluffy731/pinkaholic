@@ -64,7 +64,7 @@
     var lab = document.createElement("label");
     lab.innerHTML = '<input type="radio" name="pack" value="' + p.id + '"' + (p.featured ? " checked" : "") + ">" +
       "<span><b>" + p.name + "</b><small>" + balls(p.qty) + " · " + money(p.price) + "</small>" +
-      (p.featured ? "<em>Most loved</em>" : "") + "</span>";
+      (p.featured ? "<em>Gift can</em>" : "") + "</span>";
     pick.appendChild(lab);
 
     // The tile shows what arrives: one ball, the gift can, or a row of balls.
@@ -77,14 +77,14 @@
     }
     var card = document.createElement("article");
     card.className = "pack" + (p.featured ? " pack--featured" : "");
-    card.innerHTML = (p.featured ? '<span class="pack__badge">Most loved</span>' : "") +
+    card.innerHTML = (p.featured ? '<span class="pack__badge">Gift can</span>' : "") +
       '<div class="pack__look">' + look + "</div>" +
       "<h3>" + p.name + "</h3>" +
       '<span class="pack__qty">' + balls(p.qty) + "</span>" +
       "<p>" + p.note + "</p>" +
       '<div class="pack__price">' + money(p.price) + "</div>" +
       '<div class="pack__each">' + (p.qty > 1 ? each(p) : "Tracked delivery included") + "</div>" +
-      '<a class="btn" href="#design" data-pack="' + p.id + '">Choose ' + p.name + "</a>";
+      '<a class="btn" href="#design" data-pack="' + p.id + '">Choose ' + p.name.replace(/^The /, "the ") + "</a>";
     cards.appendChild(card);
   });
 
