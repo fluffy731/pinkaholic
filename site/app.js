@@ -360,8 +360,8 @@
   var tryName = $("#try-name");
   var heroSamples = [
     { lines: ["Chloe & Jack", "12.03.27"], font: "script", ink: "wine" },
-    { lines: ["Bride Squad", ""], font: "serif", ink: "white" },
-    { lines: ["Champion", "2026"], font: "caps", ink: "gold" }
+    { lines: ["Bride Squad", ""], font: "serif", ink: "wine" },
+    { lines: ["Champion", "2026"], font: "caps", ink: "black" }
   ];
   var heroIndex = 0;
   function drawHero() {

@@ -13,6 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Cinzel:wght@600&family=Great+Vibes&family=Hanken+Grotesk:wght@400..700&display=swap" rel="stylesheet">
+  <link rel="preload" as="image" href="assets/ball.webp" type="image/webp">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -109,8 +110,8 @@
             <p class="ideas__label" id="ideas-label">Start from an idea</p>
             <div class="ideas__chips" role="group" aria-labelledby="ideas-label">
               <button type="button" class="chip" data-idea='{"line1":"Chloe & Jack","line2":"12.03.27","font":"script","ink":"wine"}'>Wedding</button>
-              <button type="button" class="chip" data-idea='{"line1":"Bride Squad","line2":"","font":"serif","ink":"white"}'>Hens</button>
-              <button type="button" class="chip" data-idea='{"line1":"Champion","line2":"2026","font":"caps","ink":"gold"}'>Club</button>
+              <button type="button" class="chip" data-idea='{"line1":"Bride Squad","line2":"","font":"serif","ink":"wine"}'>Hens</button>
+              <button type="button" class="chip" data-idea='{"line1":"Champion","line2":"2026","font":"caps","ink":"black"}'>Club</button>
               <button type="button" class="chip" data-idea='{"line1":"Love all","line2":"","font":"modern","ink":"black"}'>Keepsake</button>
             </div>
             <p class="ideas__undo" id="idea-undo" role="status" hidden>Your design was replaced. <button type="button" class="link" id="idea-undo-btn">Undo</button></p>
@@ -225,7 +226,7 @@
             <button class="link" type="button" aria-label="Use the wedding design">Use this design</button>
           </div>
         </article>
-        <article class="occ" data-sample='{"line1":"Bride Squad","line2":"","font":"serif","ink":"white"}'>
+        <article class="occ" data-sample='{"line1":"Bride Squad","line2":"","font":"serif","ink":"wine"}'>
           <canvas class="ball-canvas occ__ball" width="360" height="360" aria-hidden="true"></canvas>
           <div class="occ__text">
             <h3>Hens &amp; birthdays</h3>
@@ -233,7 +234,7 @@
             <button class="link" type="button" aria-label="Use the hens design">Use this design</button>
           </div>
         </article>
-        <article class="occ" data-sample='{"line1":"Champion","line2":"2026","font":"caps","ink":"gold"}'>
+        <article class="occ" data-sample='{"line1":"Champion","line2":"2026","font":"caps","ink":"black"}'>
           <canvas class="ball-canvas occ__ball" width="360" height="360" aria-hidden="true"></canvas>
           <div class="occ__text">
             <h3>Clubs &amp; teams</h3>
