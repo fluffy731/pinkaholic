@@ -25,7 +25,7 @@ t = np.clip((lum - lo) / (hi - lo), 0, 1)
 
 # Deep rose in shadow, the can's ball pink across the lit face, a soft blush highlight.
 stops = np.array([0.0, 0.3, 0.6, 0.82, 1.0], np.float32)
-cols = np.array([[132, 40, 78], [204, 102, 138], [238, 160, 184], [247, 186, 204], [252, 210, 222]], np.float32) / 255
+cols = np.array([[128, 36, 74], [200, 96, 132], [234, 150, 176], [244, 176, 197], [250, 198, 213]], np.float32) / 255
 pink = np.stack([np.interp(t, stops, cols[:, c]) for c in range(3)], 2)
 # The white rubber seam keeps its own light, warmed a touch.
 seam = np.stack([lum, lum * 0.97, lum * 0.97], 2) * 1.04
@@ -33,12 +33,19 @@ seam = np.stack([lum, lum * 0.97, lum * 0.97], 2) * 1.04
 felt = np.maximum(np.clip((sat - 0.14) / 0.2, 0, 1), np.clip((0.9 - alpha) / 0.3, 0, 1))[..., None]
 out = np.clip(pink * felt + seam * (1 - felt), 0, 1)
 
-# Square crop centred on the ball's solid disc; record its radius for ball.js.
+# The ball's disc, from its left, right and top edges (the bottom is flattened where it met the floor).
 solid = alpha > 0.95
 ys, xs = np.nonzero(solid)
 x0, x1 = np.percentile(xs, [0.1, 99.9])
-y0, y1 = np.percentile(ys, [0.1, 99.9])
-cx, cy, r = (x0 + x1) / 2, (y0 + y1) / 2, max(x1 - x0, y1 - y0) / 2
+r = (x1 - x0) / 2
+cx, cy = (x0 + x1) / 2, np.percentile(ys, 0.1) + r
+
+# Trim the loose fibres to a short, tidy halo just past the outline.
+yy, xx = np.mgrid[0:alpha.shape[0], 0:alpha.shape[1]]
+d = np.hypot(xx - cx, yy - cy) / r
+alpha = alpha * np.clip((1.025 - d) / 0.03, 0, 1)
+
+# Square crop centred on the disc; record its radius for ball.js.
 half = r * 1.12
 box = tuple(int(round(v)) for v in (cx - half, cy - half, cx + half, cy + half))
 img = Image.fromarray((np.dstack([out, alpha]) * 255).astype(np.uint8), "RGBA").crop(box).resize((SIZE, SIZE), Image.LANCZOS)

@@ -15,7 +15,7 @@
   var THETA = 0.92;        // the texture covers ±THETA radians of the ball
   // The photo: ball radius as a share of the image width (brand/make_ball_photo.py prints it),
   // and the turn that centres the print on the felt panel between the two seams.
-  var PHOTO = "assets/ball.webp", PHOTO_R = 0.4464, LAM0 = 0.06;
+  var PHOTO = "assets/ball.webp", PHOTO_R = 0.4464, LAM0 = 0.24;
   var FELT_LUM = 186;      // brightness of the lit felt, where ink shows at its true colour
 
   var cache = {};          // per-size photo pixels and sphere mapping
@@ -77,6 +77,16 @@
         tv[k] = (phi / THETA + 1) / 2 * TEX;
       }
     }
+    // Ink follows the felt: nudge each texture lookup along the fibre relief, so edges wander a little.
+    var push = TEX / (2 * THETA * R) * Math.max(0.6, S / 500) * 0.045;
+    for (y = 1; y < S - 1; y++) {
+      for (x = 1; x < S - 1; x++) {
+        k = y * S + x;
+        if (tu[k] < 0) continue;
+        tu[k] += Math.max(-30, Math.min(30, detail[k + 1] - detail[k - 1])) * push;
+        tv[k] += Math.max(-30, Math.min(30, detail[k + S] - detail[k - S])) * push;
+      }
+    }
     cache[S] = { R: R, cx: cx, cy: cy, base: base, lum: lum, detail: detail, tu: tu, tv: tv };
     return cache[S];
   }
@@ -112,7 +122,7 @@
     var logo = design.logo && design.logoLayout !== "none" ? design.logo : null;
     var only = logo && design.logoLayout === "only";
     var lines = only ? [] : (design.lines || []).filter(Boolean).map(function (s) { return f.upper ? s.toUpperCase() : s; });
-    var maxW = TEX * 0.52;   // keeps the print on the felt panel, clear of the seams
+    var maxW = TEX * 0.54;   // keeps the print on the felt panel, clear of the seams
     var px = 120 * f.scale * (logo ? 0.82 : 1);
     lines.forEach(function (s) { px = Math.min(px, px * maxW / Math.max(1, widthOf(ictx, s, f, px))); });
     var lineH = px * f.line;
@@ -174,16 +184,19 @@
       var ca = colD ? colD[i0 + 3] / 255 : 0;
       if (ia <= 0 && ca <= 0) continue;
       var o = k * 4;
-      var r = px[o], gg = px[o + 1], b = px[o + 2];
-      // The photo's light, relative to the lit felt, shades the ink; stray bright fibres lie over it.
+      var r = px[o], gg = px[o + 1], b = px[o + 2], fr = r, fg = gg, fb = b;
+      // The photo's light, relative to the lit felt, shades the ink.
       var sh = Math.max(0.35, Math.min(1.12, g.lum[k] / FELT_LUM));
-      var fibre = Math.max(0.45, Math.min(1, 0.92 - g.detail[k] / 55));
+      // Raised fibres catch less ink and stray bright ones lie over it; edges break up along the felt.
+      var dt = g.detail[k];
+      var fibre = Math.max(0.35, Math.min(1, 0.9 - dt / 45));
+      var rough = dt / 60;
       if (ca > 0) {
-        ca *= 0.95 * fibre;
+        ca = Math.max(0, Math.min(1, (ca - 0.5) * 1.5 + 0.5 - rough)) * 0.95 * fibre;
         r = r * (1 - ca) + colD[i0] * sh * ca; gg = gg * (1 - ca) + colD[i0 + 1] * sh * ca; b = b * (1 - ca) + colD[i0 + 2] * sh * ca;
       }
       if (ia > 0) {
-        ia *= 0.94 * fibre;
+        ia = Math.max(0, Math.min(1, (ia - 0.5) * 1.5 + 0.5 - rough)) * 0.92 * fibre;
         var ir, ig, ib;
         if (gold) {
           var s = Math.pow(Math.max(0, sh - 0.8) / 0.32, 3), lift = 0.62 + 0.5 * sh;
@@ -192,8 +205,14 @@
           // White ink takes the felt's shading but never goes grey: it keeps a little pink.
           ir = 255 * sh * 0.97; ig = 246 * sh * 0.97; ib = 249 * sh * 0.97;
         } else {
-          ir = inkC[0] * sh; ig = inkC[1] * sh; ib = inkC[2] * sh;
+          // Dark ink soaks into the felt: part opaque, part tinted by the felt beneath it.
+          ir = inkC[0] * sh * 0.75 + fr * inkC[0] / 255 * 0.25 + 18 * sh;
+          ig = inkC[1] * sh * 0.75 + fg * inkC[1] / 255 * 0.25 + 10 * sh;
+          ib = inkC[2] * sh * 0.75 + fb * inkC[2] / 255 * 0.25 + 14 * sh;
         }
+        // Fibre highlights still show through the ink.
+        var lift = Math.max(0, dt) * 0.5;
+        ir += lift; ig += lift; ib += lift;
         r = r * (1 - ia) + ir * ia; gg = gg * (1 - ia) + ig * ia; b = b * (1 - ia) + ib * ia;
       }
       px[o] = r; px[o + 1] = gg; px[o + 2] = b;
