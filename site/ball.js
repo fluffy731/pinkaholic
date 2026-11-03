@@ -1,6 +1,6 @@
 // Pink felt tennis ball: a real photo (assets/ball.webp) with the print wrapped onto it.
 // The print (text and logo) is laid out flat on a texture, mapped onto the sphere,
-// then shaded by the photo's own light and broken up by its fibres, so it sits in the felt.
+// then shaded by the photo's light so it reads as ink printed on the felt.
 (function () {
   "use strict";
 
@@ -77,16 +77,6 @@
         tv[k] = (phi / THETA + 1) / 2 * TEX;
       }
     }
-    // Ink follows the felt: nudge each texture lookup along the fibre relief, so edges wander a little.
-    var push = TEX / (2 * THETA * R) * Math.max(0.6, S / 500) * 0.045;
-    for (y = 1; y < S - 1; y++) {
-      for (x = 1; x < S - 1; x++) {
-        k = y * S + x;
-        if (tu[k] < 0) continue;
-        tu[k] += Math.max(-30, Math.min(30, detail[k + 1] - detail[k - 1])) * push;
-        tv[k] += Math.max(-30, Math.min(30, detail[k + S] - detail[k - S])) * push;
-      }
-    }
     cache[S] = { R: R, cx: cx, cy: cy, base: base, lum: lum, detail: detail, tu: tu, tv: tv };
     return cache[S];
   }
@@ -154,7 +144,7 @@
     function softened(src, key) {
       var c = canvas(key, TEX), ctx = c.getContext("2d");
       ctx.clearRect(0, 0, TEX, TEX);
-      ctx.filter = "blur(1.6px)";
+      ctx.filter = "blur(1.1px)";
       ctx.drawImage(src, 0, 0);
       ctx.filter = "none";
       return ctx.getImageData(0, 0, TEX, TEX).data;
@@ -184,35 +174,33 @@
       var ca = colD ? colD[i0 + 3] / 255 : 0;
       if (ia <= 0 && ca <= 0) continue;
       var o = k * 4;
-      var r = px[o], gg = px[o + 1], b = px[o + 2], fr = r, fg = gg, fb = b;
-      // The photo's light, relative to the lit felt, shades the ink.
-      var sh = Math.max(0.35, Math.min(1.12, g.lum[k] / FELT_LUM));
-      // Raised fibres catch less ink and stray bright ones lie over it; edges break up along the felt.
+      var r = px[o], gg = px[o + 1], b = px[o + 2];
+      // Printed ink is a layer on top of the felt: it follows the ball's broad light (the softened
+      // photo, not each fibre), keeps a faint felt texture, and has a slight sheen where it's lit.
       var dt = g.detail[k];
-      var fibre = Math.max(0.35, Math.min(1, 0.9 - dt / 45));
-      var rough = dt / 60;
+      var sh = Math.max(0.4, Math.min(1.1, (g.lum[k] - dt) / FELT_LUM));
+      var tex2 = dt * 0.22;
+      var gloss = Math.pow(Math.max(0, sh - 0.92) / 0.18, 2) * 26;
+      var cover = Math.max(0.86, Math.min(1, 1 - Math.max(0, dt) / 160));
       if (ca > 0) {
-        ca = Math.max(0, Math.min(1, (ca - 0.5) * 1.5 + 0.5 - rough)) * 0.95 * fibre;
-        r = r * (1 - ca) + colD[i0] * sh * ca; gg = gg * (1 - ca) + colD[i0 + 1] * sh * ca; b = b * (1 - ca) + colD[i0 + 2] * sh * ca;
+        ca *= 0.97 * cover;
+        r = r * (1 - ca) + (colD[i0] * sh + tex2 + gloss) * ca;
+        gg = gg * (1 - ca) + (colD[i0 + 1] * sh + tex2 + gloss) * ca;
+        b = b * (1 - ca) + (colD[i0 + 2] * sh + tex2 + gloss) * ca;
       }
       if (ia > 0) {
-        ia = Math.max(0, Math.min(1, (ia - 0.5) * 1.5 + 0.5 - rough)) * 0.92 * fibre;
+        ia *= 0.97 * cover;
         var ir, ig, ib;
         if (gold) {
-          var s = Math.pow(Math.max(0, sh - 0.8) / 0.32, 3), lift = 0.62 + 0.5 * sh;
-          ir = inkC[0] * lift + 255 * s * 0.6; ig = inkC[1] * lift + 226 * s * 0.6; ib = inkC[2] * lift + 170 * s * 0.6;
+          var sp = Math.pow(Math.max(0, sh - 0.8) / 0.3, 3), lift = 0.66 + 0.46 * sh;
+          ir = inkC[0] * lift + 255 * sp * 0.6; ig = inkC[1] * lift + 226 * sp * 0.6; ib = inkC[2] * lift + 170 * sp * 0.6;
         } else if (white) {
-          // White ink takes the felt's shading but never goes grey: it keeps a little pink.
-          ir = 255 * sh * 0.97; ig = 246 * sh * 0.97; ib = 249 * sh * 0.97;
+          // White ink is opaque on the pink: shaded by the ball's light, never grey.
+          ir = 255 * (0.3 + 0.7 * sh); ig = 248 * (0.3 + 0.7 * sh); ib = 250 * (0.3 + 0.7 * sh);
         } else {
-          // Dark ink soaks into the felt: part opaque, part tinted by the felt beneath it.
-          ir = inkC[0] * sh * 0.75 + fr * inkC[0] / 255 * 0.25 + 18 * sh;
-          ig = inkC[1] * sh * 0.75 + fg * inkC[1] / 255 * 0.25 + 10 * sh;
-          ib = inkC[2] * sh * 0.75 + fb * inkC[2] / 255 * 0.25 + 14 * sh;
+          ir = inkC[0] * sh; ig = inkC[1] * sh; ib = inkC[2] * sh;
         }
-        // Fibre highlights still show through the ink.
-        var lift = Math.max(0, dt) * 0.5;
-        ir += lift; ig += lift; ib += lift;
+        ir += tex2 + gloss; ig += tex2 + gloss; ib += tex2 + gloss;
         r = r * (1 - ia) + ir * ia; gg = gg * (1 - ia) + ig * ia; b = b * (1 - ia) + ib * ia;
       }
       px[o] = r; px[o + 1] = gg; px[o + 2] = b;
