@@ -1,18 +1,46 @@
-"""Cut the pink ball out of its plain grey backdrop, for site/assets/ball.webp.
+"""Take the sample word off the pink ball photo and cut it out of its grey backdrop, for site/assets/ball.webp.
 
-The source is a blank pink ball on light grey (brand/ball/README.txt says how it was made).
-Felt is clearly pink and the backdrop and its shadow are near-grey, so saturation separates them;
-the white seams are taken back in by filling the ball's outline.
+The source is a pink ball on light grey with "Pinkaholic" printed across the panel between its
+seams (brand/ball/README.txt says how it was made). The word is replaced with felt cloned from
+just above it, brightness-matched, so the real fibre texture carries through. Felt is clearly pink
+and the backdrop and its shadow near-grey, so saturation separates them.
 Needs Pillow and NumPy. Run from the repo root: python brand/make_ball_photo.py
 """
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter
 
-SRC = "brand/ball/ball-source-gemini.webp"
+SRC = "brand/ball/ball-source-gemini-printed.jpg"
+WORD = (200, 455, 825, 585)   # box around the printed word (left, top, right, bottom)
+CLONE_UP = 120                # take felt from this many pixels above
 OUT = "site/assets/ball.webp"
 SIZE = 900
 
 src = Image.open(SRC).convert("RGB")
+
+
+def blur(x, r):
+    return np.stack([np.asarray(Image.fromarray(np.clip(x[..., c], 0, 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(r)))
+                     for c in range(3)], 2).astype(np.float32)
+
+
+# Remove the word: near-black pixels in its box, grown over the anti-aliasing.
+a = np.asarray(src).astype(np.float32)
+lum0 = a @ np.array([0.299, 0.587, 0.114], np.float32)
+box = np.zeros(lum0.shape, bool)
+box[WORD[1]:WORD[3], WORD[0]:WORD[2]] = True
+hard = np.asarray(Image.fromarray((((lum0 < 100) & box) * 255).astype(np.uint8)).filter(ImageFilter.MaxFilter(9))) > 0
+mask = np.maximum(np.asarray(Image.fromarray((hard * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(1.5))) / 255, hard)
+# The felt's broad light under the word, by diffusing in from around it.
+fill = a.copy()
+for c in range(3):
+    ch = fill[..., c]
+    ch[hard] = ch[~hard].mean()
+    for _ in range(600):
+        ch[hard] = ((np.roll(ch, 1, 0) + np.roll(ch, -1, 0) + np.roll(ch, 1, 1) + np.roll(ch, -1, 1)) / 4)[hard]
+# Felt from above, scaled to that light, laid in where the word was.
+clone = np.clip(np.roll(a, CLONE_UP, 0) * blur(fill, 8) / np.maximum(np.roll(blur(a, 8), CLONE_UP, 0), 1), 0, 255)
+a = a * (1 - mask[..., None]) + clone * mask[..., None]
+src = Image.fromarray(a.astype(np.uint8))
 rgb = np.asarray(src).astype(np.float32) / 255
 sat = np.asarray(src.convert("HSV"))[..., 1].astype(np.float32) / 255
 lum = rgb @ np.array([0.299, 0.587, 0.114], np.float32)
@@ -50,9 +78,9 @@ print(f"{OUT}: {SIZE}px; ball radius {r / (2 * half):.4f} of width, centred")
 face = (d < 0.5) & (felt > 0.9)
 print(f"lit felt brightness {np.percentile(lum[face] * 255, 75):.0f}")
 
-# Where the seams cross the middle row, for centring the print between them.
-band = (felt[int(cy) - 30:int(cy) + 30] < 0.3) & (d[int(cy) - 30:int(cy) + 30] < 0.98)
-cols = np.nonzero(band.mean(0) > 0.5)[0]
-left, right = cols[cols < cx], cols[cols > cx]
-if len(left) and len(right):
-    print(f"seams at {(left.mean() - cx) / r:+.3f}R and {(right.mean() - cx) / r:+.3f}R")
+# Where the seams cross the middle column (they run across this ball), for the print's height.
+band = (felt[:, int(cx) - 30:int(cx) + 30] < 0.3) & (d[:, int(cx) - 30:int(cx) + 30] < 0.98)
+rows = np.nonzero(band.mean(1) > 0.5)[0]
+top, bottom = rows[rows < cy], rows[rows > cy]
+if len(top) and len(bottom):
+    print(f"seams at {(top.mean() - cy) / r:+.3f}R and {(bottom.mean() - cy) / r:+.3f}R")

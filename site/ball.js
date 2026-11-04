@@ -9,14 +9,14 @@
     script: { css: '400 {px}px "Great Vibes", cursive', scale: 1.3, upper: false, track: 0, line: 0.95 },
     serif: { css: 'italic 600 {px}px "Bodoni Moda", Georgia, serif', scale: 0.9, upper: false, track: 0, line: 1.05 },
     caps: { css: '600 {px}px "Cinzel", Georgia, serif', scale: 0.78, upper: true, track: 0.08, line: 1.25 },
-    modern: { css: '600 {px}px "Hanken Grotesk", system-ui, sans-serif', scale: 0.72, upper: true, track: 0.16, line: 1.3 }
+    modern: { css: '700 {px}px "Hanken Grotesk", system-ui, sans-serif', scale: 0.74, upper: true, track: 0.1, line: 1.25 }
   };
   var TEX = 1024;          // flat print texture size
   var THETA = 0.92;        // the texture covers ±THETA radians of the ball
   // The photo: ball radius as a share of the image width (brand/make_ball_photo.py prints it),
   // and the turn that centres the print on the felt panel between the two seams.
   var PHOTO = "assets/ball.webp", PHOTO_R = 0.4464, LAM0 = 0;
-  var FELT_LUM = 189;      // brightness of the lit felt, where ink shows at its true colour
+  var FELT_LUM = 187;      // brightness of the lit felt, where ink shows at its true colour
 
   var cache = {};          // per-size photo pixels and sphere mapping
   var texCanvas = {};
@@ -112,20 +112,24 @@
     var logo = design.logo && design.logoLayout !== "none" ? design.logo : null;
     var only = logo && design.logoLayout === "only";
     var lines = only ? [] : (design.lines || []).filter(Boolean).map(function (s) { return f.upper ? s.toUpperCase() : s; });
-    var maxW = TEX * 0.6;    // keeps the print on the felt panel, clear of the seams
-    var px = 120 * f.scale * (logo ? 0.82 : 1);
+    // The seams run across the ball, so the print gets the wide felt panel between them,
+    // set large like real pad printing, and is kept clear of the seams above and below.
+    var maxW = TEX * 0.84, maxH = TEX * 0.56;
+    var px = 170 * f.scale * (logo ? 0.82 : 1);
     lines.forEach(function (s) { px = Math.min(px, px * maxW / Math.max(1, widthOf(ictx, s, f, px))); });
-    var lineH = px * f.line;
-    var textH = lines.length * lineH;
 
     var lw = 0, lh = 0, gap = 0;
     if (logo) {
       var boxH = TEX * (only ? 0.46 : 0.26) * (design.logoSize || 1);
       var aspect = logo.width / logo.height;
       lh = boxH; lw = lh * aspect;
-      if (lw > maxW * 1.08) { lw = maxW * 1.08; lh = lw / aspect; }
+      if (lw > maxW) { lw = maxW; lh = lw / aspect; }
       gap = lines.length ? TEX * 0.03 : 0;
     }
+    var fit = Math.min(1, maxH / (lines.length * px * f.line + lh + gap));
+    px *= fit; lw *= fit; lh *= fit; gap *= fit;
+    var lineH = px * f.line;
+    var textH = lines.length * lineH;
     var total = textH + lh + gap;
     var y = TEX / 2 - total / 2;
     var parts = design.logoLayout === "below" ? ["text", "logo"] : ["logo", "text"];
@@ -236,7 +240,7 @@
     document.fonts.load('400 60px "Great Vibes"'),
     document.fonts.load('italic 600 60px "Bodoni Moda"'),
     document.fonts.load('600 60px "Cinzel"'),
-    document.fonts.load('600 60px "Hanken Grotesk"')
+    document.fonts.load('700 60px "Hanken Grotesk"')
   ]).catch(function () {}) : Promise.resolve();
   var ready = Promise.all([fontsReady, photoReady]);
 
