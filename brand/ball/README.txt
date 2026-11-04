@@ -11,6 +11,12 @@ Current source: ball-source-gemini-printed.jpg (4 November 2026)
    seams sit (the print is kept between them). Re-run it and update those constants if the
    source changes; WORD in the script is the box around the printed word.
 
+Printed sample: sample-chloe-jack.jpg (4 November 2026)
+   The same Gemini ball with "Chloe & Jack / 12.03.27" printed in wine ink, made from the source
+   above with Solomon's prompt. make_ball_photo.py cuts it out as site/assets/sample-chloe-jack.webp
+   (same framing), and the hero shows it until someone types a name. Add more printed samples to
+   SAMPLES in the script.
+
 Earlier, no longer used:
    ball-source-gemini.webp: the same kind of Gemini ball with its seams running up and down,
    which only left a narrow strip for printing, so lettering came out small.

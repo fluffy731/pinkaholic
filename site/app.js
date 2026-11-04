@@ -358,16 +358,15 @@
   // ---------- Hero: type a name, see it printed ----------
   var hero = $("#hero-ball");
   var tryName = $("#try-name");
-  var heroSamples = [
-    { lines: ["Chloe & Jack", "12.03.27"], font: "script", ink: "wine" },
-    { lines: ["Bride Squad", ""], font: "serif", ink: "wine" },
-    { lines: ["Champion", "2026"], font: "caps", ink: "black" }
-  ];
-  var heroIndex = 0;
+  // A photo of a printed ball until someone types; then their name, printed live.
+  var heroPhoto = new Image();
+  heroPhoto.src = "assets/sample-chloe-jack.webp";
+  var heroPhotoReady = heroPhoto.decode ? heroPhoto.decode().catch(function () {}) : Promise.resolve();
   function drawHero() {
     fitCanvas(hero, 680);
     var name = tryName.value.trim();
-    Ball.render(hero, name ? { lines: [name.slice(0, 24), ""], font: "script", ink: "wine" } : heroSamples[heroIndex]);
+    if (!name && heroPhoto.naturalWidth) { Ball.photo(hero, heroPhoto); return; }
+    Ball.render(hero, { lines: name ? [name.slice(0, 24), ""] : ["Chloe & Jack", "12.03.27"], font: "script", ink: "wine" });
   }
   tryName.addEventListener("input", drawHero);
   $("#try").addEventListener("submit", function (e) {
@@ -401,19 +400,11 @@
   }
 
   // ---------- Start ----------
-  Ball.ready.then(function () {
+  Promise.all([Ball.ready, heroPhotoReady]).then(function () {
     render();
     drawHero();
     // Render the smaller balls after the main ones so the page settles quickly.
     setTimeout(drawOccasions, 60);
-    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (!reduce) {
-      setInterval(function () {
-        if (document.hidden || tryName.value.trim()) return;
-        heroIndex = (heroIndex + 1) % heroSamples.length;
-        drawHero();
-      }, 4200);
-    }
   });
 
   var resizeTimer;

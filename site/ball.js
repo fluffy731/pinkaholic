@@ -211,7 +211,13 @@
     }
     octx.putImageData(img, 0, 0);
 
+    stage(target, g, out, false);
+  }
+
+  // Clear the canvas, lay the ball's shadows on the floor, then draw the ball over them.
+  function stage(target, g, ball, framed) {
     var ctx = target.getContext("2d");
+    var S = target.width;
     ctx.clearRect(0, 0, S, S);
     // Soft floor shadow, then a tight contact shadow where the ball meets the surface.
     var sy = g.cy + g.R * 1.02;
@@ -232,7 +238,16 @@
     ctx.fillStyle = cg2;
     ctx.beginPath(); ctx.arc(g.cx, cy2, g.R * 0.5, 0, Math.PI * 2); ctx.fill();
     ctx.restore();
-    ctx.drawImage(out, 0, 0);
+    if (!framed) { ctx.drawImage(ball, 0, 0); return; }
+    // A photo framed like assets/ball.webp: the same ball radius, centred on the ball.
+    var w = g.R / PHOTO_R;
+    ctx.imageSmoothingQuality = "high";
+    ctx.drawImage(ball, g.cx - w / 2, g.cy - w / 2, w, w);
+  }
+
+  // Show a printed sample photo (cut out by brand/make_ball_photo.py) in the same spot and light.
+  function showPhoto(target, img) {
+    stage(target, geometry(target.width), img, true);
   }
 
   // Load the print fonts and the photo before the first render, so nothing is drawn in a fallback.
@@ -276,5 +291,5 @@
     return t;
   }
 
-  window.PinkBall = { render: render, ready: ready, prepareLogo: prepareLogo, inks: INKS };
+  window.PinkBall = { render: render, photo: showPhoto, ready: ready, prepareLogo: prepareLogo, inks: INKS };
 })();
