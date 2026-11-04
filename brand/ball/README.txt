@@ -23,3 +23,7 @@ Earlier, no longer used:
    ball-source-yellow.webp and ball-cutout-yellow.webp: an AI-generated yellow ball (FLUX.1 Krea
    [dev] on Hugging Face, seed 4242), cut out with BiRefNet and recoloured pink. Replaced because
    it read as AI-made.
+   real/box-of-12.jpg: Solomon's photo of a box of twelve printed Pinkaholic balls, the starting
+   point for the Gemini sources above. brand/make_real_ball.py tried cutting one ball straight out
+   of it, but each ball is only about 200px across, too small for the site. Running that script
+   overwrites site/assets/ball.webp unless it's given another output path.
