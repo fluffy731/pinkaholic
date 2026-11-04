@@ -1,60 +1,58 @@
-"""Recolour the cut-out yellow ball photo to the can's pink, for site/assets/ball.webp.
+"""Cut the pink ball out of its plain grey backdrop, for site/assets/ball.webp.
 
-The image model draws yellow tennis balls far more faithfully than pink ones, so we
-generate yellow and recolour here: felt takes a pink ramp by brightness, the seam stays white.
-Sources and how they were made: brand/ball/README.txt.
+The source is a blank pink ball on light grey (brand/ball/README.txt says how it was made).
+Felt is clearly pink and the backdrop and its shadow are near-grey, so saturation separates them;
+the white seams are taken back in by filling the ball's outline.
 Needs Pillow and NumPy. Run from the repo root: python brand/make_ball_photo.py
 """
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFilter
 
-SRC = "brand/ball/ball-cutout-yellow.webp"
+SRC = "brand/ball/ball-source-gemini.webp"
 OUT = "site/assets/ball.webp"
 SIZE = 900
 
-src = Image.open(SRC).convert("RGBA")
-rgba = np.asarray(src).astype(np.float32) / 255
-rgb, alpha = rgba[..., :3], rgba[..., 3]
-sat = np.asarray(src.convert("RGB").convert("HSV"))[..., 1].astype(np.float32) / 255
+src = Image.open(SRC).convert("RGB")
+rgb = np.asarray(src).astype(np.float32) / 255
+sat = np.asarray(src.convert("HSV"))[..., 1].astype(np.float32) / 255
 lum = rgb @ np.array([0.299, 0.587, 0.114], np.float32)
+H, W = lum.shape
 
-# Brightness across the felt, so the ramp spans the ball's own shadows and highlights.
-body = (alpha > 0.9) & (sat > 0.3)
-lo, hi = np.percentile(lum[body], [2, 99.5])
-t = np.clip((lum - lo) / (hi - lo), 0, 1)
+# Felt: pink enough to stand clear of the grey (about 0.03 saturation) and its shadow.
+felt = np.clip((sat - 0.08) / 0.1, 0, 1)
 
-# Deep rose in shadow, the can's ball pink across the lit face, a soft blush highlight.
-stops = np.array([0.0, 0.3, 0.6, 0.82, 1.0], np.float32)
-cols = np.array([[128, 36, 74], [200, 96, 132], [234, 150, 176], [244, 176, 197], [250, 198, 213]], np.float32) / 255
-pink = np.stack([np.interp(t, stops, cols[:, c]) for c in range(3)], 2)
-# The white rubber seam keeps its own light, warmed a touch.
-seam = np.stack([lum, lum * 0.97, lum * 0.97], 2) * 1.04
-# Loose fibres past the outline are felt too, even where the grey backdrop washed out their colour.
-felt = np.maximum(np.clip((sat - 0.14) / 0.2, 0, 1), np.clip((0.9 - alpha) / 0.3, 0, 1))[..., None]
-out = np.clip(pink * felt + seam * (1 - felt), 0, 1)
+# Rough outline of the ball, for finding its disc: the felt, closed over small gaps.
+m = Image.fromarray(((felt > 0.6) * 255).astype(np.uint8)).filter(ImageFilter.MaxFilter(15)).filter(ImageFilter.MinFilter(15))
+ImageDraw.floodfill(m, (0, 0), 128)
+inside = np.asarray(m) != 128
 
-# The ball's disc, from its left, right and top edges (the bottom is flattened where it met the floor).
-solid = alpha > 0.95
-ys, xs = np.nonzero(solid)
+# The disc, from the solid ball's left, right and top edges (the shadow sits below it).
+ys, xs = np.nonzero(inside)
 x0, x1 = np.percentile(xs, [0.1, 99.9])
 r = (x1 - x0) / 2
 cx, cy = (x0 + x1) / 2, np.percentile(ys, 0.1) + r
-
-# Trim the loose fibres to a short, tidy halo just past the outline.
-yy, xx = np.mgrid[0:alpha.shape[0], 0:alpha.shape[1]]
+yy, xx = np.mgrid[0:H, 0:W]
 d = np.hypot(xx - cx, yy - cy) / r
-alpha = alpha * np.clip((1.025 - d) / 0.03, 0, 1)
 
-# Square crop centred on the disc; record its radius for ball.js.
+# Alpha: the disc itself is solid (the seams run out to the edge, so the fill above can't hold
+# them), the fuzz past it counts by how pink it is, trimmed to a short halo.
+disc = np.clip((1.0 - d) / 0.006, 0, 1)
+alpha = np.maximum(disc, felt * (d < 1.04)) * np.clip((1.035 - d) / 0.03, 0, 1)
+
+# Square crop centred on the disc; ball.js needs the radius as a share of the width.
 half = r * 1.12
 box = tuple(int(round(v)) for v in (cx - half, cy - half, cx + half, cy + half))
-img = Image.fromarray((np.dstack([out, alpha]) * 255).astype(np.uint8), "RGBA").crop(box).resize((SIZE, SIZE), Image.LANCZOS)
-img.save(OUT, "WEBP", quality=88, alpha_quality=90, method=6)
+img = Image.fromarray((np.dstack([rgb, alpha]) * 255).astype(np.uint8), "RGBA").crop(box).resize((SIZE, SIZE), Image.LANCZOS)
+img.save(OUT, "WEBP", quality=90, alpha_quality=90, method=6)
 print(f"{OUT}: {SIZE}px; ball radius {r / (2 * half):.4f} of width, centred")
 
+# Brightness of the lit felt (ball.js FELT_LUM): ink is shown at its true colour there.
+face = (d < 0.5) & (felt > 0.9)
+print(f"lit felt brightness {np.percentile(lum[face] * 255, 75):.0f}")
+
 # Where the seams cross the middle row, for centring the print between them.
-band = (felt[int(cy) - 30:int(cy) + 30, :, 0] < 0.3) & solid[int(cy) - 30:int(cy) + 30]
-cols_in = np.nonzero(band.mean(0) > 0.5)[0]
-left, right = cols_in[cols_in < cx], cols_in[cols_in > cx]
+band = (felt[int(cy) - 30:int(cy) + 30] < 0.3) & (d[int(cy) - 30:int(cy) + 30] < 0.98)
+cols = np.nonzero(band.mean(0) > 0.5)[0]
+left, right = cols[cols < cx], cols[cols > cx]
 if len(left) and len(right):
     print(f"seams at {(left.mean() - cx) / r:+.3f}R and {(right.mean() - cx) / r:+.3f}R")

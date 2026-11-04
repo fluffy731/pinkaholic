@@ -15,8 +15,8 @@
   var THETA = 0.92;        // the texture covers ±THETA radians of the ball
   // The photo: ball radius as a share of the image width (brand/make_ball_photo.py prints it),
   // and the turn that centres the print on the felt panel between the two seams.
-  var PHOTO = "assets/ball.webp", PHOTO_R = 0.4464, LAM0 = 0.24;
-  var FELT_LUM = 186;      // brightness of the lit felt, where ink shows at its true colour
+  var PHOTO = "assets/ball.webp", PHOTO_R = 0.4464, LAM0 = 0;
+  var FELT_LUM = 189;      // brightness of the lit felt, where ink shows at its true colour
 
   var cache = {};          // per-size photo pixels and sphere mapping
   var texCanvas = {};
@@ -112,7 +112,7 @@
     var logo = design.logo && design.logoLayout !== "none" ? design.logo : null;
     var only = logo && design.logoLayout === "only";
     var lines = only ? [] : (design.lines || []).filter(Boolean).map(function (s) { return f.upper ? s.toUpperCase() : s; });
-    var maxW = TEX * 0.54;   // keeps the print on the felt panel, clear of the seams
+    var maxW = TEX * 0.6;    // keeps the print on the felt panel, clear of the seams
     var px = 120 * f.scale * (logo ? 0.82 : 1);
     lines.forEach(function (s) { px = Math.min(px, px * maxW / Math.max(1, widthOf(ictx, s, f, px))); });
     var lineH = px * f.line;
