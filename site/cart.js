@@ -14,8 +14,13 @@
   var lastFocus = null;
   var removed = null;   // { item, index } of the last design removed, for Undo
 
+  // A set that has since been withdrawn is dropped, not quietly repriced as another set.
   function load() {
-    try { return JSON.parse(localStorage.getItem(KEY) || "[]") || []; } catch (e) { return []; }
+    try {
+      return (JSON.parse(localStorage.getItem(KEY) || "[]") || []).filter(function (it) {
+        return cfg.packs.some(function (p) { return p.id === it.set; });
+      });
+    } catch (e) { return []; }
   }
 
   function save() {

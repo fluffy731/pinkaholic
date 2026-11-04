@@ -58,7 +58,7 @@
   // ---------- Sets ----------
   var pick = $("#pack-pick");
   var cards = $("#pack-cards");
-  function balls(n) { return n === 1 ? "1 ball" : n + " balls"; }
+  function balls(n) { return n + " balls"; }
   function each(p) { return money(Math.round((p.price / p.qty) * 100) / 100) + " a ball"; }
   cfg.packs.forEach(function (p) {
     var lab = document.createElement("label");
@@ -67,12 +67,12 @@
       (p.featured ? "<em>Gift can</em>" : "") + "</span>";
     pick.appendChild(lab);
 
-    // The tile shows what arrives: one ball, the gift can, or a row of balls.
+    // The tile shows what arrives: the gift can, or a row of balls.
     var look;
     if (p.id === "can") {
       look = '<svg class="pack__can" viewBox="0 0 200 612" aria-hidden="true"><use href="#can"/></svg>';
     } else {
-      look = '<span class="pack__balls' + (p.qty === 1 ? " pack__balls--one" : "") + '" style="--cols:' + Math.min(p.qty, 6) + '" aria-hidden="true">' +
+      look = '<span class="pack__balls" style="--cols:' + Math.min(p.qty, 6) + '" aria-hidden="true">' +
         new Array(p.qty + 1).join("<i></i>") + "</span>";
     }
     var card = document.createElement("article");
